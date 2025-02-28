@@ -24,6 +24,7 @@
     "date-fns": "^3.6.0",
     "framer-motion": "^12.4.7",
     "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.476.0",
     "next": "15.2.0",
     "npm": "^11.1.0",
