@@ -41,7 +41,7 @@ export default function Home() {
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="hidden md:block text-sm font-medium hover:underline underline-offset-4">
+            <Link href="/connexion" className="hidden md:block text-sm font-medium hover:underline underline-offset-4">
               Connexion
             </Link>
             <Button asChild>
