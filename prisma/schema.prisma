@@ -7,11 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+model Utilisateur {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  nom      String
+  prenom   String
+  avatar   String?
+  password String
+  stages   Stage[]
 }
+
 
 model Etudiant {
   id           Int     @id @default(autoincrement())
@@ -22,4 +27,28 @@ model Etudiant {
   etablissement String
   niveau       String
   createdAt    DateTime @default(now())
+}
+
+model Stage {
+  id            Int      @id @default(autoincrement())
+  titre         String
+  description   String
+  dateDebut     DateTime
+  dateFin       DateTime
+  duree         Int
+  remuneration  Float
+  competences   String
+  entreprise    Entreprise @relation(fields: [entrepriseId], references: [id])
+  entrepriseId  Int
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+  utilisateurId Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+
+model Entreprise {
+  id       Int      @id @default(autoincrement())
+  nom      String
+  stages   Stage[]
 }

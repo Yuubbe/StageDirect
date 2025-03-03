@@ -144,9 +144,9 @@ const ModifierEtudiants = () => {
                       <SelectValue placeholder="Sélectionnez un niveau" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="L1">L1</SelectItem>
-                      <SelectItem value="L2">L2</SelectItem>
-                      <SelectItem value="L3">L3</SelectItem>
+                      <SelectItem value="BTS1">BTS 1</SelectItem>
+                      <SelectItem value="BTS2">BTS 2</SelectItem>
+                      <SelectItem value="BUT">BUT</SelectItem>
                       <SelectItem value="M1">M1</SelectItem>
                       <SelectItem value="M2">M2</SelectItem>
                     </SelectContent>
