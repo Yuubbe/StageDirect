@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -15,7 +15,6 @@ export async function POST(req: Request) {
 
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.etudiant.findUnique({ where: { email } });
-
 
     if (existingUser) {
       return NextResponse.json({ error: "Cet email est déjà utilisé." }, { status: 400 });
@@ -35,5 +34,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Erreur lors de l'inscription." }, { status: 500 });
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+export async function GET() {
+  try {
+    const etudiants = await prisma.etudiant.findMany();
+    return NextResponse.json(etudiants);
+  } catch (error) {
+    return NextResponse.json({ error: 'Erreur lors de la récupération des étudiants' }, { status: 500 });
   }
 }
