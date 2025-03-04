@@ -166,7 +166,7 @@ const onPasswordSubmit = async (data) => {
           </motion.div>
 
           <motion.nav className="hidden md:flex gap-6" initial="hidden" animate="visible" variants={staggerContainer}>
-            {["Entreprises", "Comment ça marche", "Stages", "FAQ", "Contact"].map((item, index) => (
+            {["Entreprises", "Comment ça marche", "Stages", "Kanban", "Contact"].map((item, index) => (
               <motion.div key={index} variants={fadeIn}>
                 <Link
                   href={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
