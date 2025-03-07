@@ -26,9 +26,16 @@ model Etudiant {
   etablissement String
   niveau       String
   createdAt    DateTime @default(now())
-  kanban   Kanban?
+  role     Role     @default(USER)
 }
 
+enum Role {
+  SUPERADMIN
+  ADMIN
+  PROFESSEUR
+  ETUDIANT
+  USER
+}
 
 model Stage {
   id            Int      @id @default(autoincrement())
@@ -39,7 +46,6 @@ model Stage {
   duree         Int
   remuneration  Float
   competences   String
-  entreprise    Entreprise @relation(fields: [entrepriseId], references: [id])
   entrepriseId  Int
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
   utilisateurId Int
@@ -49,15 +55,16 @@ model Stage {
 
 
 model Entreprise {
-  id       Int      @id @default(autoincrement())
-  nom      String
-  stages   Stage[]
+  id           Int      @id @default(autoincrement())
+  nom          String
+  siret        String
+  secteur      String
+  adresse      String
+  code_postal  String
+  ville        String
+  site_web     String
+  description  String?
+  contact_nom  String
+  contact_email String
+  contact_telephone String
 }
-
-model Kanban {
-  id       Int      @id @default(autoincrement())
-  userId   Int      @unique
-  columns  Json
-  etudiant Etudiant @relation(fields: [userId], references: [id])
-}
-

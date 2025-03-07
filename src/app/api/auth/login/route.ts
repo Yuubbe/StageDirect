@@ -19,9 +19,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email ou mot de passe incorrect" }, { status: 401 });
     }
 
-    const token = sign({ id: user.id, email: user.email }, process.env.JWT_SECRET!, {
-      expiresIn: "1h",
-    });
+    // Inclure le rôle de l'utilisateur dans le JWT
+    const token = sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1h" }
+    );
 
     const response = NextResponse.json({ message: "Connexion réussie" }, { status: 200 });
 
@@ -34,6 +37,7 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
+    console.error("Erreur lors de la connexion :", error);
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
   }
 }

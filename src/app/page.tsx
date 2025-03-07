@@ -23,7 +23,6 @@ export default function Home() {
   const [user, setUser] = useState(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState("profile")
   const [avatarPreview, setAvatarPreview] = useState("https://github.com/shadcn.png")
 
   // Form setup
@@ -43,13 +42,7 @@ export default function Home() {
   useEffect(() => {
     const token = localStorage.getItem("token")
     if (token) {
-      fetch("/api/etudiants")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.length > 0) {
-            setUser(data[0])
-          }
-        })
+      fetchUser()
     }
 
     const handleScroll = () => {
@@ -59,6 +52,18 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Fetch user data
+  const fetchUser = async () => {
+    const token = localStorage.getItem("token")
+    if (token) {
+      const response = await fetch("/api/etudiants")
+      const data = await response.json()
+      if (data.length > 0) {
+        setUser(data[0]) // Set user as first entry
+      }
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token")
@@ -77,53 +82,57 @@ export default function Home() {
     }
   }
 
+  // Profile Update Handler
   const onProfileSubmit = async (data) => {
-  try {
-    const response = await fetch(`/api/etudiants/${user.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: data.email,
-      }),
-    });
-    
-    if (response.ok) {
-      const updatedUser = await response.json();
-      setUser(updatedUser);
-      alert('Profil mis à jour avec succès');
-      setIsProfileOpen(false);
-    } else {
-      alert('Erreur lors de la mise à jour du profil');
+    try {
+      const response = await fetch(`/api/etudiants/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+        }),
+      })
+      
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUser(updatedUser);
+        alert('Profil mis à jour avec succès');
+        setIsProfileOpen(false);
+      } else {
+        alert('Erreur lors de la mise à jour du profil');
+      }
+    } catch (error) {
+      console.error('Erreur de mise à jour du profil :', error)
     }
-  } catch (error) {
-    console.error('Erreur de mise à jour du profil :', error);
   }
-};
 
-const onPasswordSubmit = async (data) => {
-  try {
-    const response = await fetch(`/api/etudiants/${user.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        password: data.newPassword,
-      }),
-    });
-
-    if (response.ok) {
-      alert('Mot de passe mis à jour avec succès');
-      setIsProfileOpen(false);
-    } else {
-      alert('Erreur lors de la mise à jour du mot de passe');
+  // Password Update Handler
+  const onPasswordSubmit = async (data) => {
+    try {
+      const response = await fetch(`/api/etudiants/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          password: data.newPassword,
+        }),
+      })
+      
+      if (response.ok) {
+        alert('Mot de passe mis à jour avec succès')
+        const updatedUser = await response.json()
+        setUser(updatedUser)
+        setIsProfileOpen(false)
+      } else {
+        alert('Erreur lors de la mise à jour du mot de passe')
+      }
+    } catch (error) {
+      console.error('Erreur de mise à jour du mot de passe :', error)
     }
-  } catch (error) {
-    console.error('Erreur de mise à jour du mot de passe :', error);
   }
-};
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -166,7 +175,7 @@ const onPasswordSubmit = async (data) => {
           </motion.div>
 
           <motion.nav className="hidden md:flex gap-6" initial="hidden" animate="visible" variants={staggerContainer}>
-            {["Entreprises", "Comment ça marche", "Stages", "Kanban", "Contact"].map((item, index) => (
+            {["Entreprises", "admin", "Stages", "Kanban", "Contact"].map((item, index) => (
               <motion.div key={index} variants={fadeIn}>
                 <Link
                   href={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
@@ -274,129 +283,101 @@ const onPasswordSubmit = async (data) => {
       </main>
 
       {/* Profile Edit Dialog */}
-      {/* Profile Edit Dialog */}
-<AnimatePresence>
-  {isProfileOpen && (
-    <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Modifier votre profil</DialogTitle>
-          <DialogDescription>Mettez à jour votre photo de profil, email ou mot de passe.</DialogDescription>
-        </DialogHeader>
+      <AnimatePresence>
+        {isProfileOpen && (
+          <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Modifier votre profil</DialogTitle>
+                <DialogDescription>Mettez à jour votre photo de profil, email ou mot de passe.</DialogDescription>
+              </DialogHeader>
 
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="profile">Profil</TabsTrigger>
-            <TabsTrigger value="password">Mot de passe</TabsTrigger>
-          </TabsList>
+              <Tabs defaultValue="profile" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="profile">Profil</TabsTrigger>
+                  <TabsTrigger value="password">Mot de passe</TabsTrigger>
+                </TabsList>
 
-          {/* Formulaire de mise à jour du profil */}
-          <TabsContent value="profile" className="space-y-4 py-4">
-            <form onSubmit={handleSubmit(onProfileSubmit)}>
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative group">
-                  <Avatar className="h-24 w-24 border-2 border-primary">
-                    <AvatarImage src={avatarPreview} alt="Avatar" />
-                    <AvatarFallback>
-                      {user?.nom && user?.prenom ? `${user.nom[0]}${user.prenom[0]}` : "UN"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Label htmlFor="avatar-upload" className="cursor-pointer">
-                      <Upload className="h-6 w-6 text-white" />
-                    </Label>
-                    <Input
-                      id="avatar-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleAvatarChange}
-                    />
-                  </div>
-                </div>
+                {/* Formulaire de mise à jour du profil */}
+                <TabsContent value="profile" className="space-y-4 py-4">
+                  <form onSubmit={handleSubmit(onProfileSubmit)}>
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="relative group">
+                        <Avatar className="h-24 w-24 border-2 border-primary">
+                          <AvatarImage src={avatarPreview} alt="Avatar" />
+                          <AvatarFallback>
+                            {user?.nom && user?.prenom ? `${user.nom[0]}${user.prenom[0]}` : "UN"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="absolute top-0 left-0 opacity-0 w-full h-full cursor-pointer"
+                          onChange={handleAvatarChange}
+                        />
+                      </div>
+                      <div className="w-full space-y-2">
+                        <Label htmlFor="email">Adresse email</Label>
+                        <Input
+                          id="email"
+                          placeholder="nouvel@email.com"
+                          {...register("email", { required: true })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Button type="submit">Enregistrer</Button>
+                      </div>
+                    </div>
+                  </form>
+                </TabsContent>
 
-                <div className="w-full space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="votre@email.com"
-                      defaultValue={user?.email || ""}
-                      {...register("email", { required: "L'email est requis" })}
-                    />
-                    {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-                  </div>
-                </div>
-              </div>
-
-              <DialogFooter className="mt-6">
-                <Button type="submit">Enregistrer les modifications</Button>
+                {/* Formulaire de mise à jour du mot de passe */}
+                <TabsContent value="password" className="space-y-4 py-4">
+                  <form onSubmit={handleSubmit(onPasswordSubmit)}>
+                    <div className="flex flex-col space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+                        <Input
+                          type="password"
+                          id="currentPassword"
+                          placeholder="********"
+                          {...register("currentPassword", { required: true })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                        <Input
+                          type="password"
+                          id="newPassword"
+                          placeholder="********"
+                          {...register("newPassword", { required: true })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                        <Input
+                          type="password"
+                          id="confirmPassword"
+                          placeholder="********"
+                          {...register("confirmPassword", { required: true })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Button type="submit">Mettre à jour</Button>
+                      </div>
+                    </div>
+                  </form>
+                </TabsContent>
+              </Tabs>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsProfileOpen(false)}>
+                  Fermer
+                </Button>
               </DialogFooter>
-            </form>
-          </TabsContent>
-
-          {/* Formulaire de mise à jour du mot de passe */}
-          <TabsContent value="password" className="space-y-4 py-4">
-            <form onSubmit={handleSubmit(onPasswordSubmit)}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-                  <Input
-                    id="currentPassword"
-                    type="password"
-                    {...register("currentPassword", { required: "Le mot de passe actuel est requis" })}
-                  />
-                  {errors.currentPassword && (
-                    <p className="text-sm text-red-500">{errors.currentPassword.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    {...register("newPassword", {
-                      required: "Le nouveau mot de passe est requis",
-                      minLength: {
-                        value: 8,
-                        message: "Le mot de passe doit contenir au moins 8 caractères",
-                      },
-                    })}
-                  />
-                  {errors.newPassword && <p className="text-sm text-red-500">{errors.newPassword.message}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    {...register("confirmPassword", {
-                      required: "La confirmation du mot de passe est requise",
-                      validate: (value, formValues) =>
-                        value === formValues.newPassword || "Les mots de passe ne correspondent pas",
-                    })}
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
-                  )}
-                </div>
-              </div>
-
-              <DialogFooter className="mt-6">
-                <Button type="submit">Mettre à jour le mot de passe</Button>
-              </DialogFooter>
-            </form>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
-  )}
-</AnimatePresence>
-
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
-
