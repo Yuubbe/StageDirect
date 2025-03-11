@@ -1,43 +1,42 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
-import { sign } from "jsonwebtoken";
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { email, password } = await req.json();
+    const { email, password } = await request.json()
 
-    const user = await prisma.etudiant.findUnique({ where: { email } });
-    if (!user) {
-      return NextResponse.json({ error: "Email ou mot de passe incorrect" }, { status: 401 });
+    if (!email || !password) {
+      return new Response(JSON.stringify({ message: 'Email et mot de passe requis' }), { status: 400 })
     }
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return NextResponse.json({ error: "Email ou mot de passe incorrect" }, { status: 401 });
+    // Vérifier si l'utilisateur existe
+    const utilisateur = await prisma.utilisateur.findUnique({
+      where: { email },
+    })
+
+    if (!utilisateur) {
+      return new Response(JSON.stringify({ message: 'Utilisateur non trouvé' }), { status: 404 })
     }
 
-    // Inclure le rôle de l'utilisateur dans le JWT
-    const token = sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
-    );
+    // Comparer les mots de passe en texte clair (pour les tests uniquement)
+    if (utilisateur.password !== password) {
+      return new Response(JSON.stringify({ message: 'Mot de passe incorrect' }), { status: 400 })
+    }
 
-    const response = NextResponse.json({ message: "Connexion réussie" }, { status: 200 });
+    return new Response(JSON.stringify({
+      id: utilisateur.id,
+      nom: utilisateur.nom,
+      prenom: utilisateur.prenom,
+      email: utilisateur.email,
+      etablissement: utilisateur.etablissement,
+      niveau: utilisateur.niveau,
+      role: utilisateur.role,
+      avatar: utilisateur.avatar,
+    }), { status: 200 })
 
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60, // 1 heure
-    });
-
-    return response;
   } catch (error) {
-    console.error("Erreur lors de la connexion :", error);
-    return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
+    console.error(error)
+    return new Response(JSON.stringify({ message: 'Erreur interne' }), { status: 500 })
   }
 }

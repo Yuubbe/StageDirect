@@ -8,33 +8,22 @@ datasource db {
 }
 
 model Utilisateur {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  nom      String
-  prenom   String
-  avatar   String?
-  password String
-  stages   Stage[]
+  id            Int      @id @default(autoincrement())
+  nom           String
+  prenom        String
+  email         String   @unique
+  password      String
+  etablissement String
+  niveau        String
+  createdAt     DateTime @default(now())
+  role          Role     @default(USER)
+  avatar        String?  // Si tu veux un avatar optionnel
 }
 
-model Etudiant {
-  id       Int      @id @default(autoincrement())
-  nom      String
-  prenom   String
-  email    String @unique
-  password     String
-  etablissement String
-  niveau       String
-  createdAt    DateTime @default(now())
-  role     Role     @default(USER)
-}
 
 enum Role {
-  SUPERADMIN
-  ADMIN
-  PROFESSEUR
-  ETUDIANT
   USER
+  ADMIN
 }
 
 model Stage {
@@ -47,7 +36,6 @@ model Stage {
   remuneration  Float
   competences   String
   entrepriseId  Int
-  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
   utilisateurId Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -57,7 +45,7 @@ model Stage {
 model Entreprise {
   id           Int      @id @default(autoincrement())
   nom          String
-  siret        String
+  siret        String @unique 
   secteur      String
   adresse      String
   code_postal  String
