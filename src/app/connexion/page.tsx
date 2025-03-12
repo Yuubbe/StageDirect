@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-
+import React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import Cookie from "js-cookie" // Import de js-cookie pour gérer les cookies
 
 export default function LoginPage() {
   const router = useRouter()
@@ -41,12 +41,13 @@ export default function LoginPage() {
         setIsSuccess(true)
         setMessage("Connexion réussie !")
         setUserEmail(data.email)
+
+        // Stocker l'email de l'utilisateur dans le cookie
+        Cookie.set("userEmail", data.email, { expires: 7 }) // Le cookie expire après 7 jours
+
         setTimeout(() => {
           router.push("/");
-        }, 2000);
-      
-        // Optionally redirect after successful login
-        // setTimeout(() => router.push("/dashboard"), 1500)
+        }, 2000)
       } else {
         setIsSuccess(false)
         setMessage(data.message || "Identifiants incorrects.")
@@ -61,6 +62,14 @@ export default function LoginPage() {
       setIsLoading(false)
     }
   }
+
+  // Vérifier la présence du cookie au chargement de la page
+  React.useEffect(() => {
+    const storedEmail = Cookie.get("userEmail")
+    if (storedEmail) {
+      setUserEmail(storedEmail)
+    }
+  }, [])
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
@@ -143,4 +152,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

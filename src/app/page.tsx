@@ -2,47 +2,26 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Briefcase, Menu, Upload } from "lucide-react"
+import { Menu, ChevronRight, Briefcase } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { motion, AnimatePresence } from "framer-motion"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useForm } from "react-hook-form"
+import Cookie from "js-cookie"
+import { motion } from "framer-motion"
+import Logo from "@/components/logo"
+
+interface User {
+  email: string
+}
 
 export default function Home() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [avatarPreview, setAvatarPreview] = useState("https://github.com/shadcn.png")
-
-  // Form setup
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: "",
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-  })
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      fetchUser()
+    // Récupérer l'email de l'utilisateur depuis le cookie
+    const userEmail = Cookie.get("userEmail")
+    if (userEmail) {
+      setUser({ email: userEmail })
     }
 
     const handleScroll = () => {
@@ -53,130 +32,59 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Fetch user data
-  const fetchUser = async () => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      const response = await fetch("/api/etudiants")
-      const data = await response.json()
-      if (data.length > 0) {
-        setUser(data[0]) // Set user as first entry
-      }
-    }
-  }
-
   const handleLogout = () => {
-    localStorage.removeItem("token")
+    Cookie.remove("userEmail")
     setUser(null)
     window.location.reload()
   }
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result)
-      }
-      reader.readAsDataURL(file)
-    }
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
-  // Profile Update Handler
-  const onProfileSubmit = async (data) => {
-    try {
-      const response = await fetch(`/api/etudiants/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-        }),
-      })
-      
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUser(updatedUser);
-        alert('Profil mis à jour avec succès');
-        setIsProfileOpen(false);
-      } else {
-        alert('Erreur lors de la mise à jour du profil');
-      }
-    } catch (error) {
-      console.error('Erreur de mise à jour du profil :', error)
-    }
-  }
+  const navItems = ["Entreprises", "Admin", "Stages", "Kanban", "Contact"]
 
-  // Password Update Handler
-  const onPasswordSubmit = async (data) => {
-    try {
-      const response = await fetch(`/api/etudiants/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          password: data.newPassword,
-        }),
-      })
-      
-      if (response.ok) {
-        alert('Mot de passe mis à jour avec succès')
-        const updatedUser = await response.json()
-        setUser(updatedUser)
-        setIsProfileOpen(false)
-      } else {
-        alert('Erreur lors de la mise à jour du mot de passe')
-      }
-    } catch (error) {
-      console.error('Erreur de mise à jour du mot de passe :', error)
-    }
-  }
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  }
-
-  const staggerContainer = {
+  const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
+        delayChildren: 0.3,
       },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 100 },
     },
   }
 
   return (
     <div className="flex min-h-screen flex-col">
       <motion.header
-        className={`sticky top-0 z-50 w-full border-b backdrop-blur transition-all duration-300 ${
-          isScrolled ? "bg-background/95 shadow-sm" : "bg-background"
-        }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        className={`sticky top-0 z-50 w-full border-b backdrop-blur transition-all duration-300 ${
+          isScrolled ? "bg-background/80 shadow-sm" : "bg-background/50"
+        }`}
       >
         <div className="container flex h-16 items-center justify-between">
-          <motion.div
-            className="flex items-center gap-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Briefcase className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">StageDirect</span>
-          </motion.div>
+          <Logo />
 
-          <motion.nav className="hidden md:flex gap-6" initial="hidden" animate="visible" variants={staggerContainer}>
-            {["Entreprises", "admin", "Stages", "Kanban", "Contact"].map((item, index) => (
-              <motion.div key={index} variants={fadeIn}>
+          <nav className="hidden md:flex gap-6">
+            {navItems.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
                 <Link
                   href={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
                   className="text-sm font-medium relative group"
@@ -186,198 +94,207 @@ export default function Home() {
                 </Link>
               </motion.div>
             ))}
-          </motion.nav>
+          </nav>
 
-          <motion.div
-            className="flex items-center gap-4"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="flex items-center gap-4">
             {user ? (
-              <div className="flex items-center gap-2">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <Avatar
-                    className="cursor-pointer border-2 border-transparent hover:border-primary transition-all duration-300"
-                    onClick={() => setIsProfileOpen(true)}
-                  >
-                    <AvatarImage src={avatarPreview} alt="Avatar" />
-                    <AvatarFallback>
-                      {user.nom && user.prenom ? `${user.nom[0]}${user.prenom[0]}` : "UN"}
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
-                <span className="text-sm font-medium">
-                  Connecté en tant que {user.nom} {user.prenom}
-                </span>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="outline" size="sm" onClick={handleLogout}>
-                    Déconnexion
-                  </Button>
-                </motion.div>
-              </div>
-            ) : (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href="/connexion"
-                  className="text-sm font-medium hover:text-primary transition-colors duration-300"
-                >
-                  Connexion
-                </Link>
-              </motion.div>
-            )}
-
-            {!user && (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button asChild className="relative overflow-hidden group">
-                  <Link href="/inscription">
-                    <span className="relative z-10">Essai gratuit</span>
-                    <span className="absolute inset-0 bg-primary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-                  </Link>
+              <motion.div
+                className="flex items-center gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <span className="text-sm font-medium">{user.email}</span>
+                <Button variant="outline" size="sm" onClick={handleLogout} className="relative overflow-hidden group">
+                  <span className="relative z-10">Déconnexion</span>
+                  <span className="absolute inset-0 bg-red-100 dark:bg-red-900/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
                 </Button>
               </motion.div>
+            ) : (
+              <>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+                  <Link href="/connexion" className="text-sm font-medium relative group">
+                    <span>Connexion</span>
+                    <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                  </Link>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Button asChild className="relative overflow-hidden group">
+                    <Link href="/inscription">
+                      <span className="relative z-10">Essai gratuit</span>
+                      <span className="absolute inset-0 bg-primary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+                    </Link>
+                  </Button>
+                </motion.div>
+              </>
             )}
 
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="md:hidden">
-              <Button variant="outline" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Menu</span>
-              </Button>
-            </motion.div>
-          </motion.div>
+            <Button variant="outline" size="icon" className="md:hidden" onClick={toggleMobileMenu}>
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Menu</span>
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile menu */}
+        {isMobileMenuOpen && (
+          <motion.div
+            className="md:hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="container py-4 space-y-2 border-t">
+              {navItems.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link
+                    href={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="flex items-center py-2 text-sm font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <ChevronRight className="mr-2 h-4 w-4 text-primary" />
+                    {item}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </motion.header>
 
       <main className="flex-1">
-        <motion.section
-          className="py-12 md:py-24 lg:py-32 xl:py-48"
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-        >
+        <section className="py-12 md:py-24 lg:py-32 xl:py-48 overflow-hidden">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
-              <motion.div className="flex flex-col justify-center space-y-4" variants={fadeIn}>
+            <motion.div
+              className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div className="flex flex-col justify-center space-y-4" variants={itemVariants}>
                 <div className="space-y-2">
                   <motion.h1
                     className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
+                    variants={itemVariants}
                   >
                     Simplifiez la gestion de vos stages
                   </motion.h1>
-                  <motion.p
-                    className="max-w-[600px] text-muted-foreground md:text-xl"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                  >
+                  <motion.p className="max-w-[600px] text-muted-foreground md:text-xl" variants={itemVariants}>
                     Une plateforme complète pour connecter étudiants, entreprises et établissements d'enseignement.
                   </motion.p>
+                  <motion.div className="flex flex-col sm:flex-row gap-3 pt-6" variants={itemVariants}>
+                    <Button asChild size="lg" className="group relative overflow-hidden">
+                      <Link href="/inscription">
+                        <span className="relative z-10 flex items-center">
+                          Commencer maintenant
+                          <motion.span
+                            className="ml-2"
+                            initial={{ x: 0 }}
+                            whileHover={{ x: 5 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </motion.span>
+                        </span>
+                        <span className="absolute inset-0 bg-primary-foreground transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="lg">
+                      <Link href="/contact">En savoir plus</Link>
+                    </Button>
+                  </motion.div>
                 </div>
               </motion.div>
+              <motion.div
+                className="hidden lg:flex items-center justify-center"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 50, delay: 0.5 }}
+              >
+                
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        <motion.section
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true, margin: "-100px" }}
+          className="py-12 md:py-24 bg-muted/50"
+        >
+          <div className="container px-4 md:px-6">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold tracking-tighter">Pourquoi choisir StageDirect ?</h2>
+              <p className="mt-4 text-muted-foreground">
+                Notre plateforme offre des avantages uniques pour tous les acteurs
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  title: "Pour les étudiants",
+                  description: "Trouvez facilement des stages correspondant à vos compétences et aspirations.",
+                },
+                {
+                  title: "Pour les entreprises",
+                  description: "Recrutez les meilleurs talents et gérez efficacement vos offres de stage.",
+                },
+                {
+                  title: "Pour les écoles",
+                  description: "Suivez le parcours de vos étudiants et développez vos partenariats.",
+                },
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                  className="bg-background rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+                >
+                  <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                  <p className="text-muted-foreground">{item.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </motion.section>
       </main>
 
-      {/* Profile Edit Dialog */}
-      <AnimatePresence>
-        {isProfileOpen && (
-          <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Modifier votre profil</DialogTitle>
-                <DialogDescription>Mettez à jour votre photo de profil, email ou mot de passe.</DialogDescription>
-              </DialogHeader>
-
-              <Tabs defaultValue="profile" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="profile">Profil</TabsTrigger>
-                  <TabsTrigger value="password">Mot de passe</TabsTrigger>
-                </TabsList>
-
-                {/* Formulaire de mise à jour du profil */}
-                <TabsContent value="profile" className="space-y-4 py-4">
-                  <form onSubmit={handleSubmit(onProfileSubmit)}>
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="relative group">
-                        <Avatar className="h-24 w-24 border-2 border-primary">
-                          <AvatarImage src={avatarPreview} alt="Avatar" />
-                          <AvatarFallback>
-                            {user?.nom && user?.prenom ? `${user.nom[0]}${user.prenom[0]}` : "UN"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="absolute top-0 left-0 opacity-0 w-full h-full cursor-pointer"
-                          onChange={handleAvatarChange}
-                        />
-                      </div>
-                      <div className="w-full space-y-2">
-                        <Label htmlFor="email">Adresse email</Label>
-                        <Input
-                          id="email"
-                          placeholder="nouvel@email.com"
-                          {...register("email", { required: true })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Button type="submit">Enregistrer</Button>
-                      </div>
-                    </div>
-                  </form>
-                </TabsContent>
-
-                {/* Formulaire de mise à jour du mot de passe */}
-                <TabsContent value="password" className="space-y-4 py-4">
-                  <form onSubmit={handleSubmit(onPasswordSubmit)}>
-                    <div className="flex flex-col space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-                        <Input
-                          type="password"
-                          id="currentPassword"
-                          placeholder="********"
-                          {...register("currentPassword", { required: true })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                        <Input
-                          type="password"
-                          id="newPassword"
-                          placeholder="********"
-                          {...register("newPassword", { required: true })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                        <Input
-                          type="password"
-                          id="confirmPassword"
-                          placeholder="********"
-                          {...register("confirmPassword", { required: true })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Button type="submit">Mettre à jour</Button>
-                      </div>
-                    </div>
-                  </form>
-                </TabsContent>
-              </Tabs>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsProfileOpen(false)}>
-                  Fermer
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-      </AnimatePresence>
+      <footer className="border-t py-6 md:py-8">
+        <div className="container flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Logo className="w-24 h-6" />
+            <span className="text-sm font-medium">© {new Date().getFullYear()}</span>
+          </div>
+          <div className="flex gap-4 text-sm text-muted-foreground">
+            <Link href="/mentions-legales" className="hover:text-foreground transition-colors">
+              Mentions légales
+            </Link>
+            <Link href="/confidentialite" className="hover:text-foreground transition-colors">
+              Confidentialité
+            </Link>
+            <Link href="/contact" className="hover:text-foreground transition-colors">
+              Contact
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
+
