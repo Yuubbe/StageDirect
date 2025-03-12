@@ -17,6 +17,8 @@ model Utilisateur {
   niveau        String
   createdAt     DateTime @default(now())
   role          Role     @default(USER)
+  verified Boolean @default(false) // Champ pour vérifier l'email
+  verificationToken String?  // Token temporaire pour la vérification
   avatar        String?  // Si tu veux un avatar optionnel
 }
 

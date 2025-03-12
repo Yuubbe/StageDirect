@@ -234,11 +234,12 @@ const FormulaireUtilisateur = () => {
                   placeholder="Niveau d'études"
                 />
               </motion.div>
-
+{/*
               <motion.div variants={itemVariants} className="space-y-2">
                 <Label htmlFor="role" className="text-sm font-medium">
                   Rôle
                 </Label>
+                
                 <Select value={role} onValueChange={setRole}>
                   <SelectTrigger className="w-full transition-all duration-200 focus:ring-2 focus:ring-primary/50">
                     <SelectValue placeholder="Sélectionnez un rôle" />
@@ -248,8 +249,10 @@ const FormulaireUtilisateur = () => {
                     <SelectItem value="ADMIN">Administrateur</SelectItem>
                   </SelectContent>
                 </Select>
-              </motion.div>
+              
 
+              </motion.div>
+*/}
               <motion.div
                 variants={itemVariants}
                 whileHover={{ scale: 1.02 }}
