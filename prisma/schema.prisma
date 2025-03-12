@@ -17,31 +17,26 @@ model Utilisateur {
   niveau        String
   createdAt     DateTime @default(now())
   role          Role     @default(USER)
-  verified Boolean @default(false) // Champ pour vérifier l'email
-  verificationToken String?  // Token temporaire pour la vérification
-  avatar        String?  // Si tu veux un avatar optionnel
 }
 
 
 enum Role {
   USER
+  PROFESSEUR
   ADMIN
+  SUPERADMIN
 }
 
 model Stage {
-  id            Int      @id @default(autoincrement())
-  titre         String
-  description   String
-  dateDebut     DateTime
-  dateFin       DateTime
-  duree         Int
-  remuneration  Float
-  competences   String
-  entrepriseId  Int
-  utilisateurId Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  titre       String
+  description String
+  dateDebut   DateTime
+  dateFin     DateTime
+  entreprise  String
+  utilisateur String
 }
+
 
 
 model Entreprise {
