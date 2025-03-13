@@ -28,28 +28,42 @@ enum Role {
 }
 
 model Stage {
-  id          Int      @id @default(autoincrement())
-  titre       String
-  description String
-  dateDebut   DateTime
-  dateFin     DateTime
-  entreprise  String
-  utilisateur String
+  id        Int      @id @default(autoincrement())
+  intitulé  String
+  date      DateTime
+  createdAt DateTime @default(now())
 }
 
 
-
 model Entreprise {
-  id           Int      @id @default(autoincrement())
-  nom          String
-  siret        String @unique 
-  secteur      String
-  adresse      String
-  code_postal  String
-  ville        String
-  site_web     String
-  description  String?
-  contact_nom  String
-  contact_email String
-  contact_telephone String
+  id_entreprise     Int     @id @default(autoincrement())
+  nom_entreprise    String
+  rue_entreprise    String
+  cp_entreprise     String
+  ville_entreprise  String
+  pays_entreprise   String
+  service_entreprise String
+  tel_entreprise    String
+  fax_entreprise    String?
+  email_entreprise  String
+  taille_entreprise String
+  valider           Boolean
+  secteur_activite  Secteur_activite @relation(fields: [fk_id_activite], references: [id_activite])
+  contact           Contact?         @relation(fields: [fk_id_contact], references: [id_contact])
+  fk_id_activite    Int
+  fk_id_contact     Int?
+}
+
+model Secteur_activite {
+  id_activite   Int        @id @default(autoincrement())
+  libelle_activite String
+  entreprises  Entreprise[]
+}
+
+model Contact {
+  id_contact   Int        @id @default(autoincrement())
+  nom_contact  String
+  tel_contact  String?
+  email_contact String?
+  entreprises  Entreprise[]
 }

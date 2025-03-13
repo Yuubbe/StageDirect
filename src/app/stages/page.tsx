@@ -1,65 +1,74 @@
 // pages/stages/page.tsx
 "use client"
-import { useEffect, useState } from 'react'
+import { useState } from 'react';
 
-type Stage = {
-  id: number
-  titre: string
-  description: string
-  dateDebut: string
-  dateFin: string
-  entreprise: string
-  utilisateur: string
-}
+const StagePage = () => {
+  const [newIntitulé, setNewIntitulé] = useState('');
+  const [newDate, setNewDate] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-export default function StagesPage() {
-  const [stages, setStages] = useState<Stage[]>([])
+  // Gérer la soumission du formulaire pour ajouter un nouveau stage
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  // Récupérer les stages depuis l'API
-  useEffect(() => {
-    const fetchStages = async () => {
-      try {
-        const response = await fetch('/api/stages')
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des stages')
-        }
-        const data = await response.json()
-        setStages(data)
-      } catch (error) {
-        console.error(error)
-      }
+    if (!newIntitulé || !newDate) {
+      setError("L'intitulé et la date sont obligatoires");
+      return;
     }
 
-    fetchStages()
-  }, [])
+    try {
+      const response = await fetch('/api/stages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ intitulé: newIntitulé, date: newDate }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'ajout du stage');
+      }
+
+      setError(null); // Reset error if successful
+      setNewIntitulé('');
+      setNewDate('');
+      alert('Stage ajouté avec succès!');
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div>
-      <h1>Liste des Stages</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Titre</th>
-            <th>Description</th>
-            <th>Date de début</th>
-            <th>Date de fin</th>
-            <th>Entreprise</th>
-            <th>Utilisateur</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stages.map((stage) => (
-            <tr key={stage.id}>
-              <td>{stage.titre}</td>
-              <td>{stage.description}</td>
-              <td>{new Date(stage.dateDebut).toLocaleDateString()}</td>
-              <td>{new Date(stage.dateFin).toLocaleDateString()}</td>
-              <td>{stage.entreprise}</td>
-              <td>{stage.utilisateur}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h1>Ajouter un Stage</h1>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="intitulé">Intitulé</label>
+          <input
+            type="text"
+            id="intitulé"
+            value={newIntitulé}
+            onChange={(e) => setNewIntitulé(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="date">Date</label>
+          <input
+            type="date"
+            id="date"
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Ajouter le Stage</button>
+      </form>
     </div>
-  )
-}
+  );
+};
+
+export default StagePage;
