@@ -1,148 +1,209 @@
-"use client";
-
-import Link from "next/link"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+"use client"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Building, ArrowLeft } from "lucide-react"
+import { PlusCircle } from "lucide-react"
+import { motion } from "framer-motion"
 
-export default function EntrepriseInscription() {
-  const [formData, setFormData] = useState({
-    nom: "",
-    siret: "",
-    secteur: "",
-    adresse: "",
-    code_postal: "",
-    ville: "",
-    site_web: "",
-    description: "",
-    contact_nom: "",
-    contact_email: "",
-    contact_telephone: ""
-  })
+export default function EntrepriseList() {
+  const [entreprises, setEntreprises] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState<string>("")
 
-  const router = useRouter()
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [entreprisesPerPage] = useState(5) // Nombre d'entreprises par page
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target
-    setFormData((prev) => ({ ...prev, [id]: value }))
+  useEffect(() => {
+    const fetchEntreprises = async () => {
+      try {
+        const res = await fetch("/api/entreprises")
+
+        if (!res.ok) {
+          throw new Error(`Erreur lors de la récupération des entreprises : ${res.status}`)
+        }
+
+        const data = await res.json()
+
+        // Si la réponse est vide, ne pas mettre à jour l'état.
+        if (Array.isArray(data) && data.length > 0) {
+          setEntreprises(data)
+        } else {
+          setEntreprises([])
+        }
+        setLoading(false)
+      } catch (error) {
+        console.error("Erreur lors de la récupération des entreprises:", error)
+        setError("Une erreur est survenue lors de la récupération des entreprises.")
+        setLoading(false)
+      }
+    }
+
+    fetchEntreprises()
+  }, [])
+
+  // Fonction de recherche
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+    setCurrentPage(1)  // Remettre la pagination à la première page lors de la recherche
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-        const res = await fetch("/api/entreprises", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-        })
+  // Filtrer les entreprises en fonction du terme de recherche
+  const filteredEntreprises = entreprises.filter((entreprise) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase()
+    return (
+      entreprise.nom_entreprise.toLowerCase().includes(lowerCaseSearchTerm) ||
+      entreprise.ville_entreprise.toLowerCase().includes(lowerCaseSearchTerm) ||
+      entreprise.pays_entreprise.toLowerCase().includes(lowerCaseSearchTerm)
+    )
+  })
 
-        console.log("Statut HTTP :", res.status)
-        const data = await res.json().catch(() => null)
-        console.log("Réponse JSON :", data)
+  // Pagination logic
+  const indexOfLastEntreprise = currentPage * entreprisesPerPage
+  const indexOfFirstEntreprise = indexOfLastEntreprise - entreprisesPerPage
+  const currentEntreprises = filteredEntreprises.slice(indexOfFirstEntreprise, indexOfLastEntreprise)
 
-        if (res.ok) {
-          router.push("/");
-        } else {
-          console.error("Erreur lors de l'inscription");
-          alert("Échec de l'inscription. Veuillez réessayer.");
-        }
-        
-    } catch (error) {
-        console.error("Erreur lors de la requête :", error)
-    }
-}
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+      },
+    },
+  }
+
+  const handleAddEntreprise = () => {
+    // Ici vous pouvez implémenter la logique pour ajouter une entreprise
+    // Par exemple, rediriger vers un formulaire ou ouvrir une modal
+    console.log("Ajouter une entreprise")
+  }
 
   return (
     <div className="container mx-auto py-10">
-      <Link href="/" className="flex items-center text-sm text-muted-foreground hover:text-primary mb-6">
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Retour à l'accueil
-      </Link>
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Building className="h-6 w-6 text-primary" />
-            <CardTitle>Inscription Entreprise</CardTitle>
-          </div>
-          <CardDescription>Renseignez les informations de votre entreprise pour rejoindre StageManager</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="nom">Nom de l'entreprise</Label>
-                <Input id="nom" placeholder="Entrez le nom de votre entreprise" value={formData.nom} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="siret">Numéro SIRET (facultatif)</Label>
-                <Input id="siret" placeholder="Entrez votre numéro SIRET" value={formData.siret} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="secteur">Secteur d'activité</Label>
-                <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, secteur: value }))}>
-                  <SelectTrigger id="secteur">
-                    <SelectValue placeholder="Sélectionnez votre secteur d'activité" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tech">Technologies de l'information</SelectItem>
-                    <SelectItem value="finance">Finance et Assurance</SelectItem>
-                    <SelectItem value="sante">Santé et Médical</SelectItem>
-                    <SelectItem value="education">Éducation</SelectItem>
-                    <SelectItem value="industrie">Industrie et Manufacturing</SelectItem>
-                    <SelectItem value="commerce">Commerce et Distribution</SelectItem>
-                    <SelectItem value="autre">Autre</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="adresse">Adresse</Label>
-                <Input id="adresse" placeholder="Adresse de l'entreprise" value={formData.adresse} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="code_postal">Code Postal</Label>
-                <Input id="code_postal" placeholder="Code postal" value={formData.code_postal} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="ville">Ville</Label>
-                <Input id="ville" placeholder="Ville" value={formData.ville} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="site_web">Site Web</Label>
-                <Input id="site_web" type="url" placeholder="https://www.votreentreprise.com" value={formData.site_web} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description de l'entreprise</Label>
-                <Textarea id="description" placeholder="Décrivez brièvement votre entreprise" rows={4} value={formData.description} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact_nom">Nom du contact principal</Label>
-                <Input id="contact_nom" placeholder="Nom et prénom" value={formData.contact_nom} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact_email">Email du contact principal</Label>
-                <Input id="contact_email" type="email" placeholder="email@entreprise.com" value={formData.contact_email} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact_telephone">Téléphone du contact principal</Label>
-                <Input id="contact_telephone" type="tel" placeholder="+33 1 23 45 67 89" value={formData.contact_telephone} onChange={handleChange} />
-              </div>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" type="button" onClick={() => router.push("/")}>Annuler</Button>
-                <Button type="submit">S'inscrire</Button>
-              </CardFooter>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <Card className="max-w-full mx-auto shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-bold">Liste des entreprises</CardTitle>
+              <CardDescription>Voici les entreprises présentes dans la base de données :</CardDescription>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+            <Button onClick={handleAddEntreprise} className="transition-all duration-300 hover:scale-105">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Ajouter une entreprise
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {/* Barre de recherche modifiée */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Rechercher par nom, ville, ou pays..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full px-4 py-2 border rounded-md"
+              />
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : error ? (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-red-500 p-4 bg-red-50 rounded-md"
+              >
+                {error}
+              </motion.p>
+            ) : (
+              <>
+                {filteredEntreprises.length === 0 ? (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    Aucune entreprise trouvée.
+                  </motion.p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <motion.table
+                      className="min-w-full table-auto"
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="px-4 py-3 text-left font-medium">Nom</th>
+                          <th className="px-4 py-3 text-left font-medium">Ville</th>
+                          <th className="px-4 py-3 text-left font-medium">Pays</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentEntreprises.map((entreprise) => (
+                          <motion.tr
+                            key={entreprise.id_entreprise}
+                            variants={itemVariants}
+                            className="border-b hover:bg-muted/30 transition-colors"
+                          >
+                            <td className="px-4 py-3">{entreprise.nom_entreprise}</td>
+                            <td className="px-4 py-3">{entreprise.ville_entreprise}</td>
+                            <td className="px-4 py-3">{entreprise.pays_entreprise}</td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </motion.table>
+                  </div>
+                )}
+
+                {/* Pagination */}
+                <motion.div
+                  className="flex justify-center mt-6 gap-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Button
+                    variant="outline"
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="transition-all duration-200 hover:translate-x-[-2px]"
+                  >
+                    Précédent
+                  </Button>
+                  <span className="flex items-center px-4 font-medium">Page {currentPage}</span>
+                  <Button
+                    variant="outline"
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage * entreprisesPerPage >= filteredEntreprises.length}
+                    className="transition-all duration-200 hover:translate-x-[2px]"
+                  >
+                    Suivant
+                  </Button>
+                </motion.div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   )
 }

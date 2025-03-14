@@ -17,44 +17,62 @@ model Utilisateur {
   niveau        String
   createdAt     DateTime @default(now())
   role          Role     @default(USER)
-  verified Boolean @default(false) // Champ pour vérifier l'email
-  verificationToken String?  // Token temporaire pour la vérification
-  avatar        String?  // Si tu veux un avatar optionnel
 }
 
 
 enum Role {
   USER
+  PROFESSEUR
   ADMIN
+  SUPERADMIN
 }
 
 model Stage {
-  id            Int      @id @default(autoincrement())
-  titre         String
-  description   String
-  dateDebut     DateTime
-  dateFin       DateTime
-  duree         Int
-  remuneration  Float
-  competences   String
-  entrepriseId  Int
-  utilisateurId Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  intitulé  String
+  date      DateTime
+  createdAt DateTime @default(now())
 }
 
 
 model Entreprise {
-  id           Int      @id @default(autoincrement())
-  nom          String
-  siret        String @unique 
-  secteur      String
-  adresse      String
-  code_postal  String
-  ville        String
-  site_web     String
-  description  String?
-  contact_nom  String
-  contact_email String
-  contact_telephone String
+  id_entreprise    Int      @id @default(autoincrement())
+  nom_entreprise   String   @db.VarChar(50)
+  rue_entreprise   String?  @db.VarChar(60)
+  cp_entreprise    String?  @db.VarChar(10)
+  ville_entreprise String   @db.VarChar(30)
+  pays_entreprise  String   @default("France") @db.VarChar(30)
+  service_entreprise String? @db.VarChar(30)
+  tel_entreprise   String?  @db.VarChar(20)
+  fax_entreprise   String?  @db.VarChar(20)
+  email_entreprise String?  @db.VarChar(50)
+  taille_entreprise String? @db.VarChar(7)
+  fk_id_activite   Int
+  fk_id_contact    Int?     @unique
+  valider          Boolean  @default(false)
+
+  // Relations
+  secteur_activite SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
+  contact          Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
+
+  @@map("entreprise") // Correspondance avec la table SQL
+}
+
+
+model SecteurActivite {
+  id_activite      Int     @id @default(autoincrement()) @map("id_activite")
+  libelle_activite String  @db.VarChar(50)
+
+  // Relation avec entreprise
+  entreprises      Entreprise[]
+
+  @@map("secteur_activite") // Correspondance avec la table SQL
+}
+
+model Contact {
+  id_contact   Int        @id @default(autoincrement())
+  nom_contact  String
+  tel_contact  String?
+  email_contact String?
+  entreprises  Entreprise[]
 }
