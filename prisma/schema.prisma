@@ -52,8 +52,8 @@ model Entreprise {
   valider          Boolean  @default(false)
 
   // Relations
-  secteur_activite SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
-  contact          Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
+  secteur_activite  SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
+  contact           Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
 
   @@map("entreprise") // Correspondance avec la table SQL
 }

@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { motion } from "framer-motion"
+import Cookie from "js-cookie"
 
 interface Utilisateur {
   id: number
@@ -52,7 +53,7 @@ export default function AdminPage() {
         }
 
         fetchUtilisateurs()
-      } catch (_) {
+      } catch (error) {
         toast.error("Erreur lors de la vérification des droits")
         router.push("/")
       }

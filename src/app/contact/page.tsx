@@ -37,7 +37,14 @@ export default function ContactPage() {
         }
 
         const data = await res.json()
-        setContacts(data)
+        // Filtrer les contacts qui ont des données valides
+        const filteredData = data.filter((contact: Contact) => {
+          const hasValidPhone = contact.tel_contact && contact.tel_contact !== "N/A"
+          const hasValidEmail = contact.email_contact && contact.email_contact !== "N/A"
+          const hasValidCompanies = contact.entreprises.length > 0
+          return hasValidPhone || hasValidEmail || hasValidCompanies
+        })
+        setContacts(filteredData)
       } catch (error) {
         console.error("Erreur lors de la récupération des contacts :", error)
         setError("Impossible de récupérer les contacts.")
@@ -97,12 +104,10 @@ export default function ContactPage() {
                       {currentContacts.map((contact) => (
                         <motion.tr key={contact.id_contact} className="border-b border-gray-300 hover:bg-muted/30 transition-colors">
                           <td className="px-6 py-4">{contact.nom_contact}</td>
-                          <td className="px-6 py-4">{contact.tel_contact || "N/A"}</td>
-                          <td className="px-6 py-4">{contact.email_contact || "N/A"}</td>
+                          <td className="px-6 py-4">{contact.tel_contact}</td>
+                          <td className="px-6 py-4">{contact.email_contact}</td>
                           <td className="px-6 py-4">
-                            {contact.entreprises.length > 0
-                              ? contact.entreprises.map((e: EntrepriseContact) => e.nom_entreprise).join(", ")
-                              : "Aucune"}
+                            {contact.entreprises.map((e: EntrepriseContact) => e.nom_entreprise).join(", ")}
                           </td>
                         </motion.tr>
                       ))}
