@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, ChevronRight, Briefcase } from "lucide-react"
+import { Menu, ChevronRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import Cookie from "js-cookie"
 import { motion } from "framer-motion"
@@ -192,7 +192,7 @@ export default function Home() {
                     Simplifiez la gestion de vos stages
                   </motion.h1>
                   <motion.p className="max-w-[600px] text-muted-foreground md:text-xl" variants={itemVariants}>
-                    Une plateforme complète pour connecter étudiants, entreprises et établissements d'enseignement.
+                    Une plateforme complète pour connecter étudiants, entreprises et établissements d&apos;enseignement.
                   </motion.p>
                   <motion.div className="flex flex-col sm:flex-row gap-3 pt-6" variants={itemVariants}>
                     <Button asChild size="lg" className="group relative overflow-hidden">

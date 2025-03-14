@@ -42,16 +42,20 @@ export default function LoginPage() {
         setMessage("Connexion réussie !")
         setUserEmail(data.email)
 
-        // Stocker l'email de l'utilisateur dans le cookie
-        Cookie.set("userEmail", data.email, { expires: 7 }) // Le cookie expire après 7 jours
+        // Stocker l'email et le rôle de l'utilisateur dans les cookies
+        Cookie.set("userEmail", data.email, { expires: 7 })
+        Cookie.set("userRole", data.role, { expires: 7 }) // Stockage du rôle
+        localStorage.setItem("userRole", data.role) // Stockage du rôle aussi dans localStorage
 
         setTimeout(() => {
-          router.push("/");
+          router.push("/")
         }, 2000)
       } else {
         setIsSuccess(false)
         setMessage(data.message || "Identifiants incorrects.")
         setUserEmail(null)
+        Cookie.remove("userRole") // Suppression du rôle en cas d'échec
+        localStorage.removeItem("userRole")
       }
     } catch (error) {
       console.error(error)
