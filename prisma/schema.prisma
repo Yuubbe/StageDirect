@@ -36,28 +36,37 @@ model Stage {
 
 
 model Entreprise {
-  id_entreprise     Int     @id @default(autoincrement())
-  nom_entreprise    String
-  rue_entreprise    String
-  cp_entreprise     String
-  ville_entreprise  String
-  pays_entreprise   String
-  service_entreprise String
-  tel_entreprise    String
-  fax_entreprise    String?
-  email_entreprise  String
-  taille_entreprise String
-  valider           Boolean
-  secteur_activite  Secteur_activite @relation(fields: [fk_id_activite], references: [id_activite])
-  contact           Contact?         @relation(fields: [fk_id_contact], references: [id_contact])
-  fk_id_activite    Int
-  fk_id_contact     Int?
+  id_entreprise    Int      @id @default(autoincrement())
+  nom_entreprise   String   @db.VarChar(50)
+  rue_entreprise   String?  @db.VarChar(60)
+  cp_entreprise    String?  @db.VarChar(10)
+  ville_entreprise String   @db.VarChar(30)
+  pays_entreprise  String   @default("France") @db.VarChar(30)
+  service_entreprise String? @db.VarChar(30)
+  tel_entreprise   String?  @db.VarChar(20)
+  fax_entreprise   String?  @db.VarChar(20)
+  email_entreprise String?  @db.VarChar(50)
+  taille_entreprise String? @db.VarChar(7)
+  fk_id_activite   Int
+  fk_id_contact    Int?     @unique
+  valider          Boolean  @default(false)
+
+  // Relations
+  secteur_activite SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
+  contact          Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
+
+  @@map("entreprise") // Correspondance avec la table SQL
 }
 
-model Secteur_activite {
-  id_activite   Int        @id @default(autoincrement())
-  libelle_activite String
-  entreprises  Entreprise[]
+
+model SecteurActivite {
+  id_activite      Int     @id @default(autoincrement()) @map("id_activite")
+  libelle_activite String  @db.VarChar(50)
+
+  // Relation avec entreprise
+  entreprises      Entreprise[]
+
+  @@map("secteur_activite") // Correspondance avec la table SQL
 }
 
 model Contact {

@@ -1,195 +1,209 @@
-"use client";
+"use client"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { PlusCircle } from "lucide-react"
+import { motion } from "framer-motion"
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Building, ArrowLeft } from "lucide-react";
+export default function EntrepriseList() {
+  const [entreprises, setEntreprises] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState<string>("")
 
-interface Secteur {
-  id_activite: number;
-  nom_activite: string;
-}
-
-interface Contact {
-  id_contact: number;
-  nom_contact: string;
-}
-
-export default function EntrepriseInscription() {
-  const [formData, setFormData] = useState({
-    nom_entreprise: "",
-    rue_entreprise: "",
-    cp_entreprise: "",
-    ville_entreprise: "",
-    pays_entreprise: "France", // Valeur par défaut
-    service_entreprise: "",
-    tel_entreprise: "",
-    fax_entreprise: "",
-    email_entreprise: "",
-    taille_entreprise: "",
-    fk_id_activite: "", // Valeur à définir
-    fk_id_contact: "",  // Valeur à définir
-    valider: false,      // Valeur par défaut
-  });
-
-  const [secteurs, setSecteurs] = useState<Secteur[]>([]);
-  const [contacts, setContacts] = useState<Contact[]>([]);
-
-  const router = useRouter();
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [entreprisesPerPage] = useState(5) // Nombre d'entreprises par page
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchEntreprises = async () => {
       try {
-        const secteurRes = await fetch("/api/secteurs");
-        const secteurData = await secteurRes.json();
-        setSecteurs(secteurData);
+        const res = await fetch("/api/entreprises")
 
-        const contactRes = await fetch("/api/contacts");
-        const contactData = await contactRes.json();
-        setContacts(contactData);
+        if (!res.ok) {
+          throw new Error(`Erreur lors de la récupération des entreprises : ${res.status}`)
+        }
+
+        const data = await res.json()
+
+        // Si la réponse est vide, ne pas mettre à jour l'état.
+        if (Array.isArray(data) && data.length > 0) {
+          setEntreprises(data)
+        } else {
+          setEntreprises([])
+        }
+        setLoading(false)
       } catch (error) {
-        console.error("Erreur lors du chargement des données :", error);
+        console.error("Erreur lors de la récupération des entreprises:", error)
+        setError("Une erreur est survenue lors de la récupération des entreprises.")
+        setLoading(false)
       }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("/api/entreprises", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          valider: 1, // Mettre à 1 pour valider l'entreprise
-        }),
-      });
-
-      console.log("Statut HTTP :", res.status);
-      const data = await res.json().catch(() => null);
-      console.log("Réponse JSON :", data);
-
-      if (res.ok) {
-        router.push("/");
-      } else {
-        console.error("Erreur lors de l'inscription");
-        alert("Échec de l'inscription. Veuillez réessayer.");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la requête :", error);
     }
-  };
+
+    fetchEntreprises()
+  }, [])
+
+  // Fonction de recherche
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+    setCurrentPage(1)  // Remettre la pagination à la première page lors de la recherche
+  }
+
+  // Filtrer les entreprises en fonction du terme de recherche
+  const filteredEntreprises = entreprises.filter((entreprise) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase()
+    return (
+      entreprise.nom_entreprise.toLowerCase().includes(lowerCaseSearchTerm) ||
+      entreprise.ville_entreprise.toLowerCase().includes(lowerCaseSearchTerm) ||
+      entreprise.pays_entreprise.toLowerCase().includes(lowerCaseSearchTerm)
+    )
+  })
+
+  // Pagination logic
+  const indexOfLastEntreprise = currentPage * entreprisesPerPage
+  const indexOfFirstEntreprise = indexOfLastEntreprise - entreprisesPerPage
+  const currentEntreprises = filteredEntreprises.slice(indexOfFirstEntreprise, indexOfLastEntreprise)
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+      },
+    },
+  }
+
+  const handleAddEntreprise = () => {
+    // Ici vous pouvez implémenter la logique pour ajouter une entreprise
+    // Par exemple, rediriger vers un formulaire ou ouvrir une modal
+    console.log("Ajouter une entreprise")
+  }
 
   return (
     <div className="container mx-auto py-10">
-      <Link href="/" className="flex items-center text-sm text-muted-foreground hover:text-primary mb-6">
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Retour à l'accueil
-      </Link>
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Building className="h-6 w-6 text-primary" />
-            <CardTitle>Inscription Entreprise</CardTitle>
-          </div>
-          <CardDescription>Renseignez les informations de votre entreprise pour rejoindre StageManager</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="nom_entreprise">Nom de l'entreprise</Label>
-                <Input id="nom_entreprise" placeholder="Entrez le nom de votre entreprise" value={formData.nom_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="rue_entreprise">Adresse</Label>
-                <Input id="rue_entreprise" placeholder="Adresse de l'entreprise" value={formData.rue_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="cp_entreprise">Code Postal</Label>
-                <Input id="cp_entreprise" placeholder="Code postal" value={formData.cp_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="ville_entreprise">Ville</Label>
-                <Input id="ville_entreprise" placeholder="Ville" value={formData.ville_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="pays_entreprise">Pays</Label>
-                <Input id="pays_entreprise" placeholder="Pays de l'entreprise" value={formData.pays_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="service_entreprise">Service de l'entreprise</Label>
-                <Input id="service_entreprise" placeholder="Service de l'entreprise" value={formData.service_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="tel_entreprise">Téléphone</Label>
-                <Input id="tel_entreprise" type="tel" placeholder="Numéro de téléphone" value={formData.tel_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="fax_entreprise">Fax (facultatif)</Label>
-                <Input id="fax_entreprise" placeholder="Numéro de fax" value={formData.fax_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email_entreprise">Email</Label>
-                <Input id="email_entreprise" type="email" placeholder="Email de l'entreprise" value={formData.email_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="taille_entreprise">Taille de l'entreprise</Label>
-                <Input id="taille_entreprise" placeholder="Taille de l'entreprise" value={formData.taille_entreprise} onChange={handleChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="fk_id_activite">Secteur d'activité</Label>
-                <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, fk_id_activite: value }))} value={formData.fk_id_activite}>
-                  <SelectTrigger id="fk_id_activite">
-                    <SelectValue placeholder="Sélectionnez votre secteur d'activité" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {secteurs.map((secteur) => (
-                      <SelectItem key={secteur.id_activite} value={secteur.id_activite.toString()}>
-                        {secteur.nom_activite}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="fk_id_contact">Contact principal</Label>
-                <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, fk_id_contact: value }))} value={formData.fk_id_contact}>
-                  <SelectTrigger id="fk_id_contact">
-                    <SelectValue placeholder="Sélectionnez le contact principal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {contacts.map((contact) => (
-                      <SelectItem key={contact.id_contact} value={contact.id_contact.toString()}>
-                        {contact.nom_contact}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" type="button" onClick={() => router.push("/")}>Annuler</Button>
-                <Button type="submit">S'inscrire</Button>
-              </CardFooter>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <Card className="max-w-full mx-auto shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-bold">Liste des entreprises</CardTitle>
+              <CardDescription>Voici les entreprises présentes dans la base de données :</CardDescription>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+            <Button onClick={handleAddEntreprise} className="transition-all duration-300 hover:scale-105">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Ajouter une entreprise
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {/* Barre de recherche modifiée */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Rechercher par nom, ville, ou pays..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full px-4 py-2 border rounded-md"
+              />
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : error ? (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-red-500 p-4 bg-red-50 rounded-md"
+              >
+                {error}
+              </motion.p>
+            ) : (
+              <>
+                {filteredEntreprises.length === 0 ? (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    Aucune entreprise trouvée.
+                  </motion.p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <motion.table
+                      className="min-w-full table-auto"
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="px-4 py-3 text-left font-medium">Nom</th>
+                          <th className="px-4 py-3 text-left font-medium">Ville</th>
+                          <th className="px-4 py-3 text-left font-medium">Pays</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentEntreprises.map((entreprise) => (
+                          <motion.tr
+                            key={entreprise.id_entreprise}
+                            variants={itemVariants}
+                            className="border-b hover:bg-muted/30 transition-colors"
+                          >
+                            <td className="px-4 py-3">{entreprise.nom_entreprise}</td>
+                            <td className="px-4 py-3">{entreprise.ville_entreprise}</td>
+                            <td className="px-4 py-3">{entreprise.pays_entreprise}</td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </motion.table>
+                  </div>
+                )}
+
+                {/* Pagination */}
+                <motion.div
+                  className="flex justify-center mt-6 gap-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Button
+                    variant="outline"
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="transition-all duration-200 hover:translate-x-[-2px]"
+                  >
+                    Précédent
+                  </Button>
+                  <span className="flex items-center px-4 font-medium">Page {currentPage}</span>
+                  <Button
+                    variant="outline"
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage * entreprisesPerPage >= filteredEntreprises.length}
+                    className="transition-all duration-200 hover:translate-x-[2px]"
+                  >
+                    Suivant
+                  </Button>
+                </motion.div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
-  );
+  )
 }
