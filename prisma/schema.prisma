@@ -28,10 +28,14 @@ enum Role {
 }
 
 model Stage {
-  id        Int      @id @default(autoincrement())
-  intitulé  String
-  date      DateTime
-  createdAt DateTime @default(now())
+  id           Int        @id @default(autoincrement())
+  intitulé     String
+  date         DateTime
+  entrepriseId Int
+  contactId    Int
+  createdAt    DateTime   @default(now())
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id_entreprise])
+  contact      Contact    @relation(fields: [contactId], references: [id_contact])
 }
 
 
@@ -50,10 +54,11 @@ model Entreprise {
   fk_id_activite   Int
   fk_id_contact    Int?     @unique
   valider          Boolean  @default(false)
+  stages           Stage[]
 
   // Relations
-  secteur_activite SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
-  contact          Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
+  secteur_activite  SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
+  contact           Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
 
   @@map("entreprise") // Correspondance avec la table SQL
 }
@@ -75,4 +80,5 @@ model Contact {
   tel_contact  String?
   email_contact String?
   entreprises  Entreprise[]
+  stages       Stage[]
 }

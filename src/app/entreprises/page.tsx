@@ -5,8 +5,15 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { motion } from "framer-motion"
 
+interface Entreprise {
+  id_entreprise: number
+  nom_entreprise: string
+  ville_entreprise: string
+  pays_entreprise: string
+}
+
 export default function EntrepriseList() {
-  const [entreprises, setEntreprises] = useState<any[]>([])
+  const [entreprises, setEntreprises] = useState<Entreprise[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>("")
@@ -96,8 +103,8 @@ export default function EntrepriseList() {
 
   return (
     <div className="container mx-auto py-10">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Card className="max-w-full mx-auto shadow-lg">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full">
+        <Card className="w-full shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-2xl font-bold">Liste des entreprises</CardTitle>
@@ -143,9 +150,9 @@ export default function EntrepriseList() {
                     Aucune entreprise trouvée.
                   </motion.p>
                 ) : (
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto w-full">
                     <motion.table
-                      className="min-w-full table-auto"
+                      className="w-full table-auto"
                       variants={containerVariants}
                       initial="hidden"
                       animate="visible"

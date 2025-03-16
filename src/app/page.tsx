@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, ChevronRight, Briefcase } from "lucide-react"
+import { Menu, ChevronRight, Sun, Moon } from "lucide-react"
 import { useEffect, useState } from "react"
 import Cookie from "js-cookie"
 import { motion } from "framer-motion"
 import Logo from "@/components/logo"
+import { useTheme } from "next-themes"
 
 interface User {
   email: string
@@ -97,6 +98,7 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             {user ? (
               <motion.div
                 className="flex items-center gap-2"
@@ -192,7 +194,7 @@ export default function Home() {
                     Simplifiez la gestion de vos stages
                   </motion.h1>
                   <motion.p className="max-w-[600px] text-muted-foreground md:text-xl" variants={itemVariants}>
-                    Une plateforme complète pour connecter étudiants, entreprises et établissements d'enseignement.
+                    Une plateforme complète pour connecter étudiants, entreprises et établissements d&apos;enseignement.
                   </motion.p>
                   <motion.div className="flex flex-col sm:flex-row gap-3 pt-6" variants={itemVariants}>
                     <Button asChild size="lg" className="group relative overflow-hidden">
@@ -288,13 +290,54 @@ export default function Home() {
             <Link href="/confidentialite" className="hover:text-foreground transition-colors">
               Confidentialité
             </Link>
-            <Link href="/contact" className="hover:text-foreground transition-colors">
+            <Link href="#" className="hover:text-foreground transition-colors">
               Contact
             </Link>
           </div>
         </div>
       </footer>
     </div>
+  )
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="relative overflow-hidden"
+      >
+        <motion.div
+          initial={false}
+          animate={{
+            scale: theme === "dark" ? 0 : 1,
+            opacity: theme === "dark" ? 0 : 1,
+            rotate: theme === "dark" ? -30 : 0,
+          }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+          className="absolute"
+        >
+          <Sun className="h-[1.2rem] w-[1.2rem]" />
+        </motion.div>
+        <motion.div
+          initial={false}
+          animate={{
+            scale: theme === "dark" ? 1 : 0,
+            opacity: theme === "dark" ? 1 : 0,
+            rotate: theme === "dark" ? 0 : 30,
+          }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+          className="absolute"
+        >
+          <Moon className="h-[1.2rem] w-[1.2rem]" />
+        </motion.div>
+        <span className="sr-only">Changer le thème</span>
+      </Button>
+    </motion.div>
   )
 }
 
