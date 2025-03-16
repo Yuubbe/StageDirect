@@ -31,10 +31,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Vérifier si l'entreprise existe
-    const entreprise = await prisma.entreprise.findUnique({
-      where: { id_entreprise: entrepriseId }
-    });
+    // Vérifier si l'entreprise et le contact existent
+    const [entreprise, contact] = await Promise.all([
+      prisma.entreprise.findUnique({ where: { id_entreprise: entrepriseId } }),
+      prisma.contact.findUnique({ where: { id_contact: contactId } })
+    ]);
 
     if (!entreprise) {
       return new Response(
@@ -43,11 +44,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Vérifier si le contact existe
-    const contact = await prisma.contact.findUnique({
-      where: { id_contact: contactId }
-    });
-
     if (!contact) {
       return new Response(
         JSON.stringify({ error: 'Contact non trouvé' }), 
@@ -55,6 +51,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Créer le stage
     const newStage = await prisma.stage.create({
       data: {
         intitulé,
@@ -75,7 +72,7 @@ export async function POST(request: Request) {
   }
 }
 
-// Endpoint pour récupérer la liste des entreprises
+// Endpoint pour récupérer la liste des entreprises et contacts
 export async function OPTIONS() {
   try {
     const [entreprises, contacts] = await Promise.all([

@@ -290,7 +290,7 @@ export default function Home() {
             <Link href="/confidentialite" className="hover:text-foreground transition-colors">
               Confidentialité
             </Link>
-            <Link href="/contact" className="hover:text-foreground transition-colors">
+            <Link href="#" className="hover:text-foreground transition-colors">
               Contact
             </Link>
           </div>
