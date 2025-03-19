@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
@@ -13,6 +14,7 @@ interface Entreprise {
 }
 
 export default function EntrepriseList() {
+  const router = useRouter()
   const [entreprises, setEntreprises] = useState<Entreprise[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -95,12 +97,6 @@ export default function EntrepriseList() {
     },
   }
 
-  const handleAddEntreprise = () => {
-    // Ici vous pouvez implémenter la logique pour ajouter une entreprise
-    // Par exemple, rediriger vers un formulaire ou ouvrir une modal
-    console.log("Ajouter une entreprise")
-  }
-
   return (
     <div className="container mx-auto py-10">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full">
@@ -110,13 +106,12 @@ export default function EntrepriseList() {
               <CardTitle className="text-2xl font-bold">Liste des entreprises</CardTitle>
               <CardDescription>Voici les entreprises présentes dans la base de données :</CardDescription>
             </div>
-            <Button onClick={handleAddEntreprise} className="transition-all duration-300 hover:scale-105">
+            <Button onClick={() => router.push("/add_entreprise")} className="transition-all duration-300 hover:scale-105">
               <PlusCircle className="mr-2 h-4 w-4" />
               Ajouter une entreprise
             </Button>
           </CardHeader>
           <CardContent>
-            {/* Barre de recherche modifiée */}
             <div className="mb-4">
               <input
                 type="text"
