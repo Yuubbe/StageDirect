@@ -20,9 +20,9 @@ export default function EntrepriseList() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>("")
 
-  // Pagination
+  // Pagination pour les entreprises
   const [currentPage, setCurrentPage] = useState(1)
-  const [entreprisesPerPage] = useState(5) // Nombre d'entreprises par page
+  const [entreprisesPerPage] = useState(5)
 
   useEffect(() => {
     const fetchEntreprises = async () => {
@@ -175,7 +175,6 @@ export default function EntrepriseList() {
                     </motion.table>
                   </div>
                 )}
-
                 {/* Pagination */}
                 <motion.div
                   className="flex justify-center mt-6 gap-2"

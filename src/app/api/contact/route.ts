@@ -8,21 +8,6 @@ export async function GET() {
     const contacts = await prisma.contact.findMany({
       include: {
         entreprises: true, // Inclut les entreprises liées aux contacts
-      },
-      where: {
-        AND: [
-          {
-            nom_contact: {
-              not: {
-                in: ["Mr", "ne marche pas"]
-              }
-            }
-          }
-        ]
-      },
-      distinct: ['nom_contact', 'tel_contact', 'email_contact'], // Évite les doublons basés sur ces champs
-      orderBy: {
-        nom_contact: 'asc' // Tri par ordre alphabétique
       }
     })
     return NextResponse.json(contacts, { status: 200 })
