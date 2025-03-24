@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -7,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle, XCircle, Building2, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useRouter } from "next/navigation"
+import { toast } from "react-hot-toast"
 
 interface Entreprise {
   id_entreprise: number
@@ -22,26 +23,46 @@ export default function EntreprisesValidation() {
   const [error, setError] = useState<string | null>(null)
   const [processing, setProcessing] = useState<number | null>(null)
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null)
+  const router = useRouter()
 
-  // Récupérer les entreprises au chargement du composant
+  // Vérification du rôle de l'utilisateur avant de charger la page
   useEffect(() => {
-    const fetchEntreprises = async () => {
+    const checkAccess = async () => {
       try {
-        const res = await fetch("/api/valider_entreprises")
-        if (!res.ok) throw new Error(`Erreur ${res.status} lors de la récupération.`)
+        const res = await fetch("/api/auth/me")
+        if (!res.ok) throw new Error("Erreur d'authentification")
 
         const data = await res.json()
-        setEntreprises(data.filter((entreprise: Entreprise) => entreprise.valider === false))
+        if (!data.role || (data.role !== "PROFESSEUR" && data.role !== "ADMIN" && data.role !== "SUPERADMIN")) {
+          toast.error("Accès non autorisé")
+          router.push("/")  // Rediriger vers la page d'accueil si l'utilisateur n'a pas accès
+          return
+        }
+
+        // Si l'accès est autorisé, récupérer les entreprises
+        const fetchEntreprises = async () => {
+          try {
+            const res = await fetch("/api/valider_entreprises")
+            if (!res.ok) throw new Error(`Erreur ${res.status} lors de la récupération.`)
+            const data = await res.json()
+            setEntreprises(data.filter((entreprise: Entreprise) => entreprise.valider === false))
+          } catch (error) {
+            console.error("Erreur lors de la récupération des entreprises :", error)
+            setError("Impossible de récupérer les entreprises.")
+          } finally {
+            setLoading(false)
+          }
+        }
+
+        fetchEntreprises()
       } catch (error) {
-        console.error("Erreur lors de la récupération des entreprises :", error)
-        setError("Impossible de récupérer les entreprises.")
-      } finally {
-        setLoading(false)
+        toast.error("Erreur lors de la vérification des droits")
+        router.push("/")
       }
     }
 
-    fetchEntreprises()
-  }, [])
+    checkAccess()
+  }, [router])
 
   // Fonction pour valider ou refuser une entreprise
   const handleValidation = async (id: number, action: "valider" | "refuser") => {
@@ -244,4 +265,3 @@ export default function EntreprisesValidation() {
     </div>
   )
 }
-
