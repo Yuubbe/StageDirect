@@ -7,16 +7,14 @@ import { motion } from "framer-motion"
 
 export default function EntrepriseList() {
   const [entreprises, setEntreprises] = useState<any[]>([])
-  const [dupli, setDupli] = useState<any[]>([]) // Nouveau state pour les données de l'API dupli
+  const [dupli, setDupli] = useState<any[]>([]) 
   const [loadingEntreprises, setLoadingEntreprises] = useState<boolean>(true)
   const [loadingDupli, setLoadingDupli] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>("")
 
-  // Pagination pour les deux tableaux
-  const [currentPageEntreprises, setCurrentPageEntreprises] = useState(1)
-  const [currentPageDupli, setCurrentPageDupli] = useState(1)
-  const [entreprisesPerPage] = useState(5) // Nombre d'entreprises par page
+  const [currentPage, setCurrentPage] = useState(1)
+  const [entreprisesPerPage] = useState(5)
 
   useEffect(() => {
     const fetchEntreprises = async () => {
@@ -68,14 +66,11 @@ export default function EntrepriseList() {
     fetchDupli()
   }, [])
 
-  // Fonction de recherche
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
-    setCurrentPageEntreprises(1)  // Remettre la pagination à la première page lors de la recherche pour les entreprises
-    setCurrentPageDupli(1) // Remettre la pagination à la première page lors de la recherche pour les entreprises dupliquées
+    setCurrentPage(1)
   }
 
-  // Filtrer les entreprises en fonction du terme de recherche
   const filteredEntreprises = entreprises.filter((entreprise) => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase()
     return (
@@ -94,20 +89,16 @@ export default function EntrepriseList() {
     )
   })
 
-  // Pagination logic pour entreprises
-  const indexOfLastEntreprise = currentPageEntreprises * entreprisesPerPage
+  const indexOfLastEntreprise = currentPage * entreprisesPerPage
   const indexOfFirstEntreprise = indexOfLastEntreprise - entreprisesPerPage
   const currentEntreprises = filteredEntreprises.slice(indexOfFirstEntreprise, indexOfLastEntreprise)
 
-  // Pagination logic pour entreprises dupliquées
-  const indexOfLastDupli = currentPageDupli * entreprisesPerPage
+  const indexOfLastDupli = currentPage * entreprisesPerPage
   const indexOfFirstDupli = indexOfLastDupli - entreprisesPerPage
   const currentDupli = filteredDupli.slice(indexOfFirstDupli, indexOfLastDupli)
 
-  const paginateEntreprises = (pageNumber: number) => setCurrentPageEntreprises(pageNumber)
-  const paginateDupli = (pageNumber: number) => setCurrentPageDupli(pageNumber)
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -130,15 +121,12 @@ export default function EntrepriseList() {
   }
 
   const handleAddEntreprise = () => {
-    // Ici vous pouvez implémenter la logique pour ajouter une entreprise
-    // Par exemple, rediriger vers un formulaire ou ouvrir une modal
     console.log("Ajouter une entreprise")
   }
 
   return (
     <div className="container mx-auto py-10">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        {/* Tableau des entreprises */}
         <Card className="max-w-full mx-auto shadow-lg mb-10">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -151,7 +139,6 @@ export default function EntrepriseList() {
             </Button>
           </CardHeader>
           <CardContent>
-            {/* Barre de recherche */}
             <div className="mb-4">
               <input
                 type="text"
@@ -213,18 +200,17 @@ export default function EntrepriseList() {
                         ))}
                       </tbody>
                     </motion.table>
-                    {/* Pagination pour les entreprises */}
                     <div className="flex justify-center mt-4">
                       <Button
-                        onClick={() => paginateEntreprises(currentPageEntreprises - 1)}
-                        disabled={currentPageEntreprises === 1}
+                        onClick={() => paginate(currentPage - 1)}
+                        disabled={currentPage === 1}
                       >
                         Précédent
                       </Button>
-                      <span className="mx-4">{currentPageEntreprises}</span>
+                      <span className="mx-4">{currentPage}</span>
                       <Button
-                        onClick={() => paginateEntreprises(currentPageEntreprises + 1)}
-                        disabled={currentPageEntreprises * entreprisesPerPage >= filteredEntreprises.length}
+                        onClick={() => paginate(currentPage + 1)}
+                        disabled={currentPage * entreprisesPerPage >= filteredEntreprises.length}
                       >
                         Suivant
                       </Button>
@@ -236,7 +222,6 @@ export default function EntrepriseList() {
           </CardContent>
         </Card>
 
-        {/* Tableau des entreprises dupli */}
         <Card className="max-w-full mx-auto shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -296,18 +281,17 @@ export default function EntrepriseList() {
                         ))}
                       </tbody>
                     </motion.table>
-                    {/* Pagination pour les entreprises dupliquées */}
                     <div className="flex justify-center mt-4">
                       <Button
-                        onClick={() => paginateDupli(currentPageDupli - 1)}
-                        disabled={currentPageDupli === 1}
+                        onClick={() => paginate(currentPage - 1)}
+                        disabled={currentPage === 1}
                       >
                         Précédent
                       </Button>
-                      <span className="mx-4">{currentPageDupli}</span>
+                      <span className="mx-4">{currentPage}</span>
                       <Button
-                        onClick={() => paginateDupli(currentPageDupli + 1)}
-                        disabled={currentPageDupli * entreprisesPerPage >= filteredDupli.length}
+                        onClick={() => paginate(currentPage + 1)}
+                        disabled={currentPage * entreprisesPerPage >= filteredDupli.length}
                       >
                         Suivant
                       </Button>
