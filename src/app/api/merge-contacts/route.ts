@@ -57,4 +57,4 @@ export async function POST(request: Request) {
     console.error("Erreur lors de la fusion des contacts :", error)
     return NextResponse.json({ error: "Impossible de fusionner les contacts" }, { status: 500 })
   }
-}
+

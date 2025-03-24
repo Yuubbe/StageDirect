@@ -8,7 +8,6 @@ import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
@@ -18,19 +17,19 @@ import { useRouter } from "next/navigation";
 
 const FormulaireUtilisateur = () => {
   // États pour chaque champ du formulaire
-  const router = useRouter() // Initialisation du router
-  const [nom, setNom] = useState("")
-  const [prenom, setPrenom] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [etablissement, setEtablissement] = useState("")
-  const [niveau, setNiveau] = useState("")
-  const [role, setRole] = useState("USER") // Valeur par défaut "USER"
-  const [message, setMessage] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false)
+  const router = useRouter(); // Initialisation du router
+  const [nom, setNom] = useState("");
+  const [prenom, setPrenom] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [etablissement, setEtablissement] = useState("");
+  const [niveau, setNiveau] = useState("");
+  const [role, setRole] = useState("USER"); // Valeur par défaut "USER"
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   // Animation variants
   const containerVariants = {
@@ -42,7 +41,7 @@ const FormulaireUtilisateur = () => {
         delayChildren: 0.2,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
@@ -51,15 +50,15 @@ const FormulaireUtilisateur = () => {
       opacity: 1,
       transition: { type: "spring", stiffness: 100 },
     },
-  }
+  };
 
   // Fonction pour gérer la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setMessage("")
-    setIsSuccess(false)
-    setIsError(false)
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage("");
+    setIsSuccess(false);
+    setIsError(false);
 
     const utilisateurData = { nom, prenom, email, password, etablissement, niveau, role };
 
@@ -234,25 +233,7 @@ const FormulaireUtilisateur = () => {
                   placeholder="Niveau d'études"
                 />
               </motion.div>
-{/*
-              <motion.div variants={itemVariants} className="space-y-2">
-                <Label htmlFor="role" className="text-sm font-medium">
-                  Rôle
-                </Label>
-                
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger className="w-full transition-all duration-200 focus:ring-2 focus:ring-primary/50">
-                    <SelectValue placeholder="Sélectionnez un rôle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="USER">Utilisateur</SelectItem>
-                    <SelectItem value="ADMIN">Administrateur</SelectItem>
-                  </SelectContent>
-                </Select>
-              
 
-              </motion.div>
-*/}
               <motion.div
                 variants={itemVariants}
                 whileHover={{ scale: 1.02 }}
@@ -362,7 +343,7 @@ const FormulaireUtilisateur = () => {
         </motion.div>
       )}
     </div>
-  )
+  );
 }
 
-export default FormulaireUtilisateur
+export default FormulaireUtilisateur;
