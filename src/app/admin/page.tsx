@@ -19,42 +19,76 @@ interface Utilisateur {
   role: string
 }
 
+interface Log {
+  timestamp: string
+  action: string
+  user: string
+}
+
 export default function AdminPage() {
   const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [logs, setLogs] = useState<Log[]>([])  // Tableau des logs
   const router = useRouter()
+
+  // Fonction pour ajouter un log sans duplication
+  const addLog = (action: string, user: string) => {
+    const timestamp = new Date().toLocaleString()
+
+    // Vérifier si le log existe déjà dans les 5 dernières secondes
+    const now = new Date().getTime()
+    const recentLog = logs.find(
+      (log) => log.action === action && log.user === user && (now - new Date(log.timestamp).getTime() < 5000)
+    )
+
+    if (!recentLog) {
+      setLogs((prevLogs) => [...prevLogs, { timestamp, action, user }])
+    }
+  }
 
   useEffect(() => {
     const checkAccess = async () => {
+      console.log("Vérification des droits d'accès...")
       try {
         const res = await fetch("/api/auth/me")
         if (!res.ok) throw new Error("Erreur d'authentification")
         
         const data = await res.json()
+        console.log("Données de l'utilisateur récupérées:", data)
+
         if (!data.role || (data.role !== "ADMIN" && data.role !== "SUPERADMIN")) {
           toast.error("Accès non autorisé")
+          addLog("Tentative d'accès avec des droits insuffisants", data.email || "Inconnu")
           router.push("/")
           return
         }
 
         // Si l'accès est autorisé, charger les utilisateurs
         const fetchUtilisateurs = async () => {
+          console.log("Chargement des utilisateurs...")
           try {
             const res = await fetch("/api/admin")
             if (!res.ok) throw new Error(`Erreur ${res.status}`)
             const data = await res.json()
+            console.log("Utilisateurs récupérés:", data)
             setUtilisateurs(data)
-          } catch (_) {
+            addLog("Récupération des utilisateurs réussie", data.email || "Inconnu")
+          } catch (err) {
+            console.error("Impossible de récupérer les utilisateurs:", err)
             setError("Impossible de récupérer les utilisateurs.")
+            addLog("Erreur lors de la récupération des utilisateurs", "Inconnu")
           } finally {
+            console.log("Fin du chargement des utilisateurs.")
             setLoading(false)
           }
         }
 
         fetchUtilisateurs()
       } catch (error) {
+        console.error("Erreur lors de la vérification des droits:", error)
         toast.error("Erreur lors de la vérification des droits")
+        addLog("Erreur lors de la vérification des droits", "Inconnu")
         router.push("/")
       }
     }
@@ -63,6 +97,7 @@ export default function AdminPage() {
   }, [router])
 
   const updateRole = async (id: number, newRole: string) => {
+    console.log(`Mise à jour du rôle de l'utilisateur ${id} en ${newRole}...`)
     try {
       const res = await fetch(`/api/admin`, {
         method: "PATCH",
@@ -76,14 +111,17 @@ export default function AdminPage() {
           if (user.id === id) {
             // Stocker le nouveau rôle dans le localStorage
             localStorage.setItem("userRole", newRole)
+            console.log(`Rôle de l'utilisateur ${id} mis à jour en ${newRole}`)
+            addLog(`Mise à jour du rôle en ${newRole}`, user.email)
             return { ...user, role: newRole }
           }
           return user
         })
       )
       toast.success("Rôle mis à jour avec succès !")
-    } catch (_) {
-      console.error("Erreur lors de la mise à jour du rôle")
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du rôle:", error)
+      addLog("Erreur lors de la mise à jour du rôle", "Inconnu")
       toast.error("Erreur lors de la mise à jour")
     }
   }
@@ -152,6 +190,37 @@ export default function AdminPage() {
                 </div>
               </>
             )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Tableau des logs */}
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <Card className="w-full shadow-lg mt-10">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Logs des actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <motion.table className="min-w-full table-auto border border-gray-200">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="px-4 py-3 border">Timestamp</th>
+                    <th className="px-4 py-3 border">Action</th>
+                    <th className="px-4 py-3 border">Utilisateur</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.map((log, index) => (
+                    <motion.tr key={index} className="border-b hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 border">{log.timestamp}</td>
+                      <td className="px-4 py-3 border">{log.action}</td>
+                      <td className="px-4 py-3 border">{log.user}</td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </motion.table>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
