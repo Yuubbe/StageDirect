@@ -214,7 +214,7 @@ export default function Home() {
                       </Link>
                     </Button>
                     <Button asChild variant="outline" size="lg">
-                      <Link href="/contact">En savoir plus</Link>
+                      <Link href="/presentation">En savoir plus</Link>
                     </Button>
                   </motion.div>
                 </div>
@@ -224,9 +224,7 @@ export default function Home() {
                 initial={{ opacity: 0, x: 100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ type: "spring", stiffness: 50, delay: 0.5 }}
-              >
-                
-              </motion.div>
+              ></motion.div>
             </motion.div>
           </div>
         </section>
@@ -275,6 +273,95 @@ export default function Home() {
             </div>
           </div>
         </motion.section>
+        <motion.section
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true, margin: "-100px" }}
+          className="py-12 md:py-24 bg-background"
+        >
+          <div className="container px-4 md:px-6">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold tracking-tighter">Documentation complète</h2>
+              <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+                Accédez à notre documentation détaillée pour tirer le meilleur parti de StageDirect, que vous soyez
+                utilisateur ou développeur.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                viewport={{ once: true }}
+                className="bg-card rounded-lg border shadow-sm overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-primary"
+                    >
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Documentation Utilisateur</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Guide complet pour les étudiants, entreprises et établissements d'enseignement utilisant
+                    StageDirect.
+                  </p>
+                  <Button asChild size="lg" className="w-full">
+                    <Link href="/documentation/utilisateur">Consulter le guide utilisateur</Link>
+                  </Button>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                viewport={{ once: true }}
+                className="bg-card rounded-lg border shadow-sm overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-primary"
+                    >
+                      <path d="M18 16.98h-5.99c-1.66 0-3.01-1.34-3.01-3s1.34-3 3.01-3H18"></path>
+                      <path d="M6 7.02h6c1.66 0 3 1.35 3 3.01 0 1.66-1.34 3-3 3H6"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Documentation Technique</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Ressources techniques pour les développeurs et administrateurs travaillant avec StageDirect.
+                  </p>
+                  <Button asChild size="lg" variant="outline" className="w-full">
+                    <Link href="/documentation/technique">Consulter la documentation technique</Link>
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </motion.section>
       </main>
 
       <footer className="border-t py-6 md:py-8">
@@ -284,13 +371,16 @@ export default function Home() {
             <span className="text-sm font-medium">© {new Date().getFullYear()}</span>
           </div>
           <div className="flex gap-4 text-sm text-muted-foreground">
+            <Link href="/documentation/utilisateur" className="hover:text-foreground transition-colors">
+              Documentation
+            </Link>
             <Link href="/mentions-legales" className="hover:text-foreground transition-colors">
               Mentions légales
             </Link>
             <Link href="/confidentialite" className="hover:text-foreground transition-colors">
               Confidentialité
             </Link>
-            <Link href="#" className="hover:text-foreground transition-colors">
+            <Link href="/contact" className="hover:text-foreground transition-colors">
               Contact
             </Link>
           </div>
@@ -340,3 +430,4 @@ function ThemeToggle() {
     </motion.div>
   )
 }
+
