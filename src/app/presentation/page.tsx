@@ -481,81 +481,103 @@ export default function PresentationPage() {
       ),
     },
 
-    // Diapositive 7: Avantages
+  
+    // Diapositive pour le Cahier des Charges
     {
-      id: "benefits",
+      id: "cdc",
       content: (
         <div className="flex flex-col h-full">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Avantages clés</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Cahier des Charges</h2>
           </motion.div>
 
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="flex-1 flex flex-col items-center justify-center">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
+              className="bg-card rounded-xl p-6 border shadow-lg max-w-3xl w-full"
             >
-              <div className="space-y-6">
-                {[
-                  {
-                    title: "Gain de temps considérable",
-                    description: "Réduction de 70% du temps consacré aux tâches administratives",
-                    delay: 0.4,
-                  },
-                  {
-                    title: "Amélioration de la communication",
-                    description: "Tous les échanges centralisés sur une seule plateforme",
-                    delay: 0.6,
-                  },
-                  {
-                    title: "Suivi en temps réel",
-                    description: "Visibilité complète sur l'avancement de chaque stage",
-                    delay: 0.8,
-                  },
-                  {
-                    title: "Réduction des erreurs",
-                    description: "Automatisation des processus de validation et de vérification",
-                    delay: 1.0,
-                  },
-                ].map((benefit, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: benefit.delay, duration: 0.5 }}
-                    className="flex items-start gap-4"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold">{benefit.title}</h3>
-                      <p className="text-muted-foreground">{benefit.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+              <div className="flex flex-col md:flex-row gap-6 items-center">
+                <div className="relative w-full md:w-1/2 aspect-[3/4] bg-muted rounded-lg overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="64"
+                      height="64"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-primary/40"
+                    >
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                  </div>
+                  <iframe
+                    src="/pdf/CDC.pdf"
+                    className="absolute inset-0 w-full h-full opacity-80 pointer-events-none"
+                    title="Aperçu du Cahier des Charges"
+                  />
+                </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="flex justify-center"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full blur-2xl" />
-                <div className="relative p-1 bg-gradient-to-br from-primary/30 to-primary/10 rounded-full">
-                  <div className="bg-background rounded-full p-4">
-                    <div className="w-64 h-64 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-6xl font-bold text-primary mb-2">+40%</div>
-                        <div className="text-xl">d'efficacité</div>
-                      </div>
-                    </div>
+                <div className="w-full md:w-1/2 flex flex-col gap-4">
+                  <h3 className="text-2xl font-bold">Spécifications du projet</h3>
+                  <p className="text-muted-foreground">
+                    Le cahier des charges détaille les spécifications techniques et fonctionnelles de la plateforme
+                    StageDirect.
+                  </p>
+                  
+
+                  <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                    <Button asChild>
+                      <a href="/pdf/CDC.pdf" target="_blank" rel="noopener noreferrer">
+                        Ouvrir le document
+                      </a>
+                    </Button>
+                    <Button variant="outline" asChild>
+                      <a href="/pdf/CDC.pdf" download>
+                        Télécharger
+                      </a>
+                    </Button>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      ),
+    },
+
+    // Diapositive pour le MCD
+    {
+      id: "mcd",
+      content: (
+        <div className="flex flex-col h-full">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Modèle Conceptuel de Données</h2>
+          </motion.div>
+
+          <div className="flex-1 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="relative max-w-full"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl blur-xl" />
+              <div className="relative p-2 bg-card border rounded-xl shadow-lg">
+              <Image
+                  src="/img/mcd.png"
+                  alt="Modèle Conceptuel de Données"
+                  width={1200}
+                  height={900}
+                  className="rounded-lg"
+                  style={{ width: '100%', height: 'auto' }}
+                />
               </div>
             </motion.div>
           </div>
@@ -688,7 +710,7 @@ export default function PresentationPage() {
               <span>Diapositive précédente</span>
             </div>
             <div className="flex items-center gap-2">
-              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">→</kbd>
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px">→</kbd>
               <span>Diapositive suivante</span>
             </div>
             <div className="flex items-center gap-2">

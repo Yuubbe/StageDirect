@@ -1,6 +1,6 @@
 // src/app/api/entreprises/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/prisma';
+import { prisma } from '../../../lib/prisma';
 
 // Fonction de normalisation avancée
 const normalizeString = (str: string) => {
@@ -21,7 +21,7 @@ const normalizeString = (str: string) => {
 // Fonction de recherche avec normalisation des noms
 export async function GET(req: NextRequest) {
   try {
-    const { searchTerm } = req.nextUrl.searchParams;  // Récupérer le terme de recherche depuis l'URL
+    const searchTerm = req.nextUrl.searchParams.get('searchTerm');  // Récupérer le terme de recherche depuis l'URL
 
     // Récupérer toutes les entreprises
     const entreprises = await prisma.entreprise.findMany();
