@@ -16,7 +16,12 @@ model Utilisateur {
   etablissement String
   createdAt     DateTime @default(now())
   role          Role     @default(USER)
+
+  // Relation avec Stage (un utilisateur peut être associé à un stage)
+  stage         Stage?   @relation(fields: [stageId], references: [id])
+  stageId       Int?     @unique // On fait en sorte que chaque utilisateur ait un seul stage
 }
+
 
 
 enum Role {
@@ -29,15 +34,17 @@ enum Role {
 model Stage {
   id                Int                  @id @default(autoincrement())
   intitulé          String
-  date             DateTime
+  date              DateTime
   entrepriseId      Int?
-  entrepriseValId   Int?
   contactId         Int
   createdAt         DateTime             @default(now())
 
+  // Relations avec les autres entités
   entreprise        Entreprise?          @relation(fields: [entrepriseId], references: [id_entreprise])
-  entrepriseVal     EntrepriseValidation? @relation(fields: [entrepriseValId], references: [id_entreprise_validation])
   contact           Contact              @relation(fields: [contactId], references: [id_contact])
+
+  // Relation inverse avec Utilisateur (Pas besoin de fields et references ici)
+  utilisateur       Utilisateur?         @relation
 }
 
 
@@ -65,39 +72,13 @@ model Entreprise {
   @@map("entreprise") // Correspondance avec la table SQL
 }
 
-model EntrepriseValidation {
-  id_entreprise_validation Int      @id @default(autoincrement())
-  nom_entreprise          String   @db.VarChar(50)
-  rue_entreprise          String?  @db.VarChar(60)
-  cp_entreprise           String?  @db.VarChar(10)
-  ville_entreprise        String   @db.VarChar(30)
-  pays_entreprise         String   @default("France") @db.VarChar(30)
-  service_entreprise      String?  @db.VarChar(30)
-  tel_entreprise          String?  @db.VarChar(20)
-  fax_entreprise          String?  @db.VarChar(20)
-  email_entreprise        String?  @db.VarChar(50)
-  taille_entreprise       String?  @db.VarChar(7)
-  fk_id_activite          Int
-  fk_id_contact           Int?     @unique
-  stages                  Stage[]
-
-  // Relations
-  secteur_activite        SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
-  contact                 Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
-
-  @@map("entreprise_validation") // Correspondance avec la table SQL
-}
-
-
 model SecteurActivite {
   id_activite      Int                @id @default(autoincrement()) @map("id_activite")
   libelle_activite String             @db.VarChar(50)
 
   // Relations
   entreprises      Entreprise[]
-  entreprisesVal   EntrepriseValidation[]
 }
-
 
 model Contact {
   id_contact    Int                  @id @default(autoincrement())
@@ -105,6 +86,5 @@ model Contact {
   tel_contact   String?
   email_contact String?
   entreprises   Entreprise[]
-  entreprisesVal EntrepriseValidation[]
   stages        Stage[]
 }

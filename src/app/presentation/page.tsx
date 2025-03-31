@@ -2,10 +2,18 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, ChevronRight, X, Maximize2, Minimize2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, X, Maximize2, Minimize2, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 export default function PresentationPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -103,7 +111,7 @@ export default function PresentationPage() {
       content: (
         <div className="flex flex-col h-full">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">La problématique</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Sommaire</h2>
           </motion.div>
 
           <div className="flex-1 flex flex-col md:flex-row gap-8 items-center">
@@ -120,7 +128,7 @@ export default function PresentationPage() {
                   </div>
                   <div>
                     <p>
-                      Processus de gestion des stages <span className="font-bold">complexe et fragmenté</span>
+                      Contexte
                     </p>
                   </div>
                 </li>
@@ -130,8 +138,7 @@ export default function PresentationPage() {
                   </div>
                   <div>
                     <p>
-                      <span className="font-bold">Communication difficile</span> entre étudiants, entreprises et
-                      établissements
+                      Fonctionnalités clés
                     </p>
                   </div>
                 </li>
@@ -141,7 +148,7 @@ export default function PresentationPage() {
                   </div>
                   <div>
                     <p>
-                      Suivi administratif <span className="font-bold">chronophage et source d'erreurs</span>
+                      Pour qui ?
                     </p>
                   </div>
                 </li>
@@ -151,7 +158,37 @@ export default function PresentationPage() {
                   </div>
                   <div>
                     <p>
-                      <span className="font-bold">Manque de visibilité</span> sur l'avancement des stages
+                      Comment ça marche ?
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-orange-600 dark:text-purple-400 font-bold">
+                    5
+                  </div>
+                  <div>
+                    <p>
+                      Cahier des Charges
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-pink-600 dark:text-purple-400 font-bold">
+                    6
+                  </div>
+                  <div>
+                    <p>
+                      Modèle Logique de données
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-green-600 dark:text-purple-400 font-bold">
+                    7
+                  </div>
+                  <div>
+                    <p>
+                      Démo du logiciel
                     </p>
                   </div>
                 </li>
@@ -167,13 +204,6 @@ export default function PresentationPage() {
               <div className="relative w-80 h-80">
                 <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-blue-500/20 rounded-full blur-2xl" />
                 <div className="relative w-full h-full flex items-center justify-center">
-                  <Image
-                    src="/placeholder.svg?height=300&width=300"
-                    alt="Problématique"
-                    width={300}
-                    height={300}
-                    className="rounded-lg"
-                  />
                 </div>
               </div>
             </motion.div>
@@ -188,21 +218,21 @@ export default function PresentationPage() {
       content: (
         <div className="flex flex-col h-full">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Notre solution</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Contexte</h2>
           </motion.div>
 
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="bg-card rounded-xl p-6 border shadow-sm"
+              className="bg-card rounded-xl p-12 border shadow-lg w-full"
             >
-              <h3 className="text-2xl font-bold mb-4">StageDirect</h3>
-              <p className="text-lg mb-6">
-                Une plateforme centralisée qui connecte tous les acteurs du processus de stage
+              <h3 className="text-4xl font-bold mb-8">StageDirect</h3>
+              <p className="text-2xl mb-10">
+                StageDirect est une plateforme demandé par le lycée Notre-Dame-De-La-Providence à Avranches afin de simplifier l'obtention et la gestion des stages pour les étudiants. 
               </p>
-              <ul className="space-y-3">
+              <ul className="space-y-6">
                 <motion.li
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -227,15 +257,7 @@ export default function PresentationPage() {
                   transition={{ delay: 0.9, duration: 0.5 }}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span>Communication en temps réel</span>
-                </motion.li>
-                <motion.li
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.1, duration: 0.5 }}
-                  className="flex items-center gap-2"
-                >
+                  
                   <div className="w-2 h-2 rounded-full bg-primary" />
                   <span>Suivi visuel avec tableau Kanban</span>
                 </motion.li>
@@ -247,16 +269,7 @@ export default function PresentationPage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl blur-xl" />
-                <Image
-                  src="/placeholder.svg?height=400&width=500"
-                  alt="Solution StageDirect"
-                  width={500}
-                  height={400}
-                  className="relative rounded-lg shadow-lg"
-                />
-              </div>
+              
             </motion.div>
           </div>
         </div>
@@ -276,7 +289,7 @@ export default function PresentationPage() {
             {[
               {
                 title: "Validation Entreprises",
-                description: "Processus simplifié pour valider les entreprises partenaires",
+                description: "Les étudiants rentrent les informations de l'entreprises afin que l'entreprise soit stocké dans la base de donnée",
                 color: "from-blue-500/20 to-blue-600/20",
                 delay: 0.3,
               },
@@ -288,7 +301,7 @@ export default function PresentationPage() {
               },
               {
                 title: "Gestion des stages",
-                description: "Publication et recherche d'offres avec filtres avancés",
+                description: "facilitation à la gestion des stages pour les professeurs",
                 color: "from-amber-500/20 to-amber-600/20",
                 delay: 0.7,
               },
@@ -299,16 +312,10 @@ export default function PresentationPage() {
                 delay: 0.9,
               },
               {
-                title: "Communication intégrée",
-                description: "Échanges facilités entre tous les acteurs",
+                title: "Communication avec les entreprises",
+                description: "liste des contacts des entreprises afin de facilité de recherche de stage",
                 color: "from-pink-500/20 to-pink-600/20",
                 delay: 1.1,
-              },
-              {
-                title: "Rapports et analyses",
-                description: "Statistiques détaillées pour optimiser le processus",
-                color: "from-indigo-500/20 to-indigo-600/20",
-                delay: 1.3,
               },
             ].map((feature, index) => (
               <motion.div
@@ -353,29 +360,17 @@ export default function PresentationPage() {
                 textColor: "text-blue-700 dark:text-blue-300",
                 delay: 0.3,
               },
-              {
-                title: "Entreprises",
-                benefits: [
-                  "Publication facile d'offres de stage",
-                  "Gestion des candidatures centralisée",
-                  "Évaluation simplifiée des stagiaires",
-                  "Visibilité auprès des établissements",
-                ],
-                color: "bg-amber-100 dark:bg-amber-900/30",
-                textColor: "text-amber-700 dark:text-amber-300",
-                delay: 0.6,
-              },
+
               {
                 title: "Établissements",
                 benefits: [
-                  "Validation des entreprises partenaires",
+                  "Validation des entreprises et des stages des étudiants",
                   "Suivi global des étudiants",
-                  "Statistiques et rapports détaillés",
                   "Gestion administrative allégée",
                 ],
                 color: "bg-green-100 dark:bg-green-900/30",
                 textColor: "text-green-700 dark:text-green-300",
-                delay: 0.9,
+                delay: 0.6,
               },
             ].map((user, index) => (
               <motion.div
@@ -418,7 +413,7 @@ export default function PresentationPage() {
       content: (
         <div className="flex flex-col h-full">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Le processus</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Comment ça marche ?</h2>
           </motion.div>
 
           <div className="flex-1 flex items-center justify-center">
@@ -434,22 +429,22 @@ export default function PresentationPage() {
                   },
                   {
                     title: "Publication des offres",
-                    description: "Les entreprises publient leurs offres de stage",
+                    description: "Une liste des entreprises est fournis pour faciliter la recherche de stage",
                     delay: 0.6,
                   },
                   {
                     title: "Recherche et candidature",
-                    description: "Les étudiants recherchent et postulent aux offres",
+                    description: "Les étudiants contactent les entreprises",
                     delay: 0.9,
                   },
                   {
                     title: "Sélection et validation",
-                    description: "Les entreprises sélectionnent les candidats et les établissements valident",
+                    description: "Une fois le stage accepté, l'étudiant n'a plus qu'à remplir le formulaire de ce stage et qu'un professeur le valide",
                     delay: 1.2,
                   },
                   {
                     title: "Suivi du stage",
-                    description: "Tous les acteurs suivent l'avancement via le tableau Kanban",
+                    description: "les professeurs suivent l'avancement du stage via le tableau Kanban que l'étudiant remplit au fur et à mesure. ",
                     delay: 1.5,
                   },
                   {
@@ -481,7 +476,7 @@ export default function PresentationPage() {
       ),
     },
 
-  
+   
     // Diapositive pour le Cahier des Charges
     {
       id: "cdc",
@@ -554,14 +549,14 @@ export default function PresentationPage() {
 
     // Diapositive pour le MCD
     {
-      id: "mcd",
+      id: "mld",
       content: (
         <div className="flex flex-col h-full">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Modèle Conceptuel de Données</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Modèle Logique de Données</h2>
           </motion.div>
 
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex flex-col items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -570,14 +565,161 @@ export default function PresentationPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl blur-xl" />
               <div className="relative p-2 bg-card border rounded-xl shadow-lg">
-              <Image
+                <Image
                   src="/img/mcd.png"
                   alt="Modèle Conceptuel de Données"
-                  width={1200}
-                  height={900}
+                  width={800}
+                  height={600}
                   className="rounded-lg"
-                  style={{ width: '100%', height: 'auto' }}
                 />
+
+                {/* Légende */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  className="mt-4 p-3 bg-muted/50 rounded-lg"
+                >
+                  <h3 className="text-lg font-semibold mb-2">Légende des cardinalités</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="font-mono bg-primary/10 px-2 py-1 rounded">1</div>
+                      <span>Un à un (1:1)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-mono bg-primary/10 px-2 py-1 rounded">*</div>
+                      <span>Un à plusieurs (1:N) ou plusieurs à plusieurs (N:M)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-mono bg-primary/10 px-2 py-1 rounded">0..1</div>
+                      <span>Optionnel, un ou aucun (0..1)</span>
+                    </div>
+                  </div><div className="mt-6 p-4 bg-muted rounded-lg">
+                          <h3 className="text-lg font-semibold mb-3">Résumé des cardinalités</h3>
+                          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <li>Utilisateur → Stage : 1 à 0..1</li>
+                            <li>Stage → Utilisateur : 0..1 à 1</li>
+                            <li>Stage → Entreprise : 0..1 à 1</li>
+                            <li>Entreprise → Stage : 1 à *</li>
+                            <li>Stage → Contact : 1 à 0..*</li>
+                            <li>Contact → Stage : 0..* à 1</li>
+                            <li>Entreprise → SecteurActivite : 1 à 1</li>
+                            <li>SecteurActivite → Entreprise : 1 à *</li>
+                            <li>Entreprise → Contact : 0..1 à 0..1</li>
+                            <li>Contact → Entreprise : 0..1 à 0..1</li>
+                          </ul>
+                        </div>
+                </motion.div>
+
+                {/* Bouton d'explication */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                  className="mt-3 flex justify-center"
+                >
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="gap-2">
+                        <Info className="h-4 w-4" />
+                        Explication des relations
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl">Explication des relations du MLD</DialogTitle>
+                        <DialogDescription>Détail des cardinalités entre les entités du modèle</DialogDescription>
+                      </DialogHeader>
+
+                      <div className="space-y-6 mt-4">
+                        <div className="space-y-2">
+                          <div className="pl-4 border-l-2 border-primary/20 space-y-1">
+                            <p>Utilisateur → Stage : Un utilisateur peut être associé à un seul stage.</p><br></br>
+                            <p>Stage → Utilisateur : Un stage peut être associé à un seul utilisateur.</p><br></br>
+                            <p className="text-muted-foreground">
+                              Un stage peut ne pas être associé à un utilisateur, mais s'il l'est,
+                              il est associé à un seul utilisateur
+                            </p><br></br>
+                            <p className="font-medium mt-1">
+                              Un utilisateur a un stage, et un stage peut avoir un utilisateur
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="pl-4 border-l-2 border-primary/20 space-y-1">
+                            <p>
+                              Stage → Entreprise : Un stage peut être associé à une entreprise .
+                            </p>
+                            <p className="text-muted-foreground">
+                              Un stage peut ne pas être associé à une entreprise, mais s'il l'est,
+                              il est associé à une seule entreprise
+                            </p><br></br>
+                            <p>Entreprise → Stage : Une entreprise peut avoir plusieurs stages.</p>
+                            <p className="text-muted-foreground">
+                              Une entreprise peut être associée à plusieurs stages
+                            </p><br></br>
+                            <p className="font-medium mt-1">
+                              Un stage peut être associé à une entreprise, mais une entreprise peut
+                              avoir plusieurs stages
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="pl-4 border-l-2 border-primary/20 space-y-1">
+                            <p>Stage → Contact : Un stage est associé à un contact.</p>
+                            <p className="text-muted-foreground">
+                             Chaque stage est associé à un contact
+                            </p><br></br>
+                            <p>Contact → Stage : Un contact peut être associé à plusieurs stages.</p>
+                            <p className="text-muted-foreground">
+                              Un contact peut être lié à plusieurs stages
+                            </p><br></br>
+                            <p className="font-medium mt-1">
+                             Un stage a un contact, et un contact peut être lié à plusieurs
+                              stages
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="pl-4 border-l-2 border-primary/20 space-y-1">
+                            <p>Entreprise → SecteurActivite : Une entreprise est liée à un secteur d'activité.</p>
+                            <p className="text-muted-foreground">
+                              Chaque entreprise appartient à un secteur d'activité
+                            </p><br></br>
+                            <p>
+                              SecteurActivite → Entreprise : Un secteur d'activité peut concerner plusieurs entreprises.
+                            </p>
+                            <p className="text-muted-foreground">
+                              Un secteur d'activité peut inclure plusieurs entreprises
+                            </p><br></br>
+                            <p className="font-medium mt-1">
+                              Un secteur d'activité peut avoir plusieurs entreprises
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="pl-4 border-l-2 border-primary/20 space-y-1">
+                            <p>Entreprise → Contact : Une entreprise peut avoir un contact.</p>
+                            <p className="text-muted-foreground">
+                              Une entreprise peut avoir un contact ou aucun contact
+                            </p><br></br>
+                            <p>Contact → Entreprise : Un contact peut être lié à une entreprise.</p>
+                            <p className="text-muted-foreground">
+                              Un contact peut être associé à une entreprise
+                            </p>
+                            <p className="font-medium mt-1">Relation : 0..1 à 0..1</p>
+                          </div>
+                        </div>
+
+                        
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -710,7 +852,7 @@ export default function PresentationPage() {
               <span>Diapositive précédente</span>
             </div>
             <div className="flex items-center gap-2">
-              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px">→</kbd>
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">→</kbd>
               <span>Diapositive suivante</span>
             </div>
             <div className="flex items-center gap-2">

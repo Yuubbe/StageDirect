@@ -547,9 +547,6 @@ npx prisma migrate deploy`}
                                 <code>/api/valider_entreprises</code> - Validation des entreprises
                               </li>
                               <li>
-                                <code>/api/dupli</code> - Détection des doublons
-                              </li>
-                              <li>
                                 <code>/api/merge-entreprise</code> - Fusion d'entreprises
                               </li>
                             </ul>

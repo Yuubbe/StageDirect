@@ -361,10 +361,10 @@ export default function UserDocumentation() {
                           <div className="bg-muted/50 p-2 text-sm font-medium">Aperçu de l'interface de connexion</div>
                           <div className="p-4 flex justify-center">
                             <Image
-                              src="/placeholder.svg?height=300&width=500"
+                              src="/img/connexion.png"
                               alt="Interface de connexion"
-                              width={500}
-                              height={300}
+                              width={700}
+                              height={500}
                               className="rounded border"
                             />
                           </div>
@@ -462,9 +462,9 @@ export default function UserDocumentation() {
                             <div className="bg-muted/50 p-2 text-sm font-medium">Aperçu du tableau Kanban</div>
                             <div className="p-4 flex justify-center">
                               <Image
-                                src="/placeholder.svg?height=300&width=500"
+                                src="/img/kanban.png"
                                 alt="Tableau Kanban"
-                                width={500}
+                                width={1200}
                                 height={300}
                                 className="rounded border"
                               />
@@ -525,10 +525,10 @@ export default function UserDocumentation() {
                               </p>
                               <h4 className="text-sm font-medium mb-2">Permissions :</h4>
                               <ul className="list-disc pl-6 text-sm space-y-1">
-                                <li>Consulter les offres de stage</li>
-                                <li>Postuler aux offres</li>
+                                <li>Consulter les entreprises</li>
+                                <li>effectuer une demande de validation de stage</li>
                                 <li>Gérer son profil</li>
-                                <li>Suivre l'avancement de ses candidatures</li>
+                                
                               </ul>
                             </CardContent>
                           </Card>
@@ -541,9 +541,9 @@ export default function UserDocumentation() {
                               </p>
                               <h4 className="text-sm font-medium mb-2">Permissions :</h4>
                               <ul className="list-disc pl-6 text-sm space-y-1">
-                                <li>Consulter les stages de ses étudiants</li>
-                                <li>Valider les conventions de stage</li>
-                                <li>Communiquer avec les entreprises</li>
+                                <li>Consulter les stages des étudiants</li>
+                                <li>Valider les stage des étudiants</li>
+                                <li>vérifications des informations donnés par les étudiants</li>
                                 <li>Évaluer les stages</li>
                               </ul>
                             </CardContent>
@@ -559,7 +559,6 @@ export default function UserDocumentation() {
                               <ul className="list-disc pl-6 text-sm space-y-1">
                                 <li>Gérer les utilisateurs</li>
                                 <li>Valider les entreprises</li>
-                                <li>Gérer les offres de stage</li>
                                 <li>Accéder aux statistiques</li>
                               </ul>
                             </CardContent>
