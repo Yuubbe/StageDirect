@@ -353,8 +353,8 @@ export default function PresentationPage() {
                 benefits: [
                   "Recherche simplifiée de stages",
                   "Candidature en quelques clics",
-                  "Suivi de progression personnalisé",
-                  "Communication directe avec les tuteurs",
+                  "Suivi de projet de stage facilité",
+                  
                 ],
                 color: "bg-blue-100 dark:bg-blue-900/30",
                 textColor: "text-blue-700 dark:text-blue-300",
@@ -428,7 +428,7 @@ export default function PresentationPage() {
                     delay: 0.3,
                   },
                   {
-                    title: "Publication des offres",
+                    title: "Liste des entreprises.",
                     description: "Une liste des entreprises est fournis pour faciliter la recherche de stage",
                     delay: 0.6,
                   },
