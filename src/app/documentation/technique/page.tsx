@@ -211,12 +211,7 @@ export default function TechnicalDocumentation() {
                     <TabsTrigger value="backend">Backend</TabsTrigger>
                     <TabsTrigger value="database">Base de données</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="overview" className="mt-0">
-                    <p className="text-muted-foreground">
-                      Documentation technique complète de StageDirect, couvrant l'architecture, les composants, les API
-                      et les processus de déploiement.
-                    </p>
-                  </TabsContent>
+
                   <TabsContent value="frontend" className="mt-0">
                     <p className="text-muted-foreground">
                       Détails sur l'implémentation frontend de StageDirect, utilisant Next.js, React et diverses
@@ -827,7 +822,6 @@ npx prisma migrate deploy`}
                   {/* Deployment */}
                   <motion.section id="deployment" variants={itemVariants}>
                     <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-bold">Déploiement</h2>
                       <Button variant="ghost" size="sm" onClick={() => toggleSection("deployment")}>
                         {expandedSections.deployment ? (
                           <ChevronDown className="h-4 w-4" />
@@ -843,20 +837,7 @@ npx prisma migrate deploy`}
                         exit={{ opacity: 0, height: 0 }}
                         className="mt-4 space-y-4"
                       >
-                        <p>
-                          StageDirect peut être déployé sur diverses plateformes, mais Vercel est recommandé pour sa
-                          simplicité et son intégration native avec Next.js.
-                        </p>
-
-                        <h3 className="text-xl font-semibold mt-8" id="deployment-vercel">
-                          Déploiement sur Vercel
-                        </h3>
-                        <ol className="list-decimal pl-6 space-y-2 mt-4">
-                          <li>Créez un compte sur Vercel et connectez-le à votre dépôt Git</li>
-                          <li>Importez le projet depuis votre dépôt</li>
-                          <li>Configurez les variables d'environnement nécessaires</li>
-                          <li>Déployez l'application</li>
-                        </ol>
+                        
 
                         <h3 className="text-xl font-semibold mt-8" id="deployment-env">
                           Variables d'environnement
@@ -952,8 +933,6 @@ const menuItems = [
   { id: "authentication", label: "Authentification" },
   { id: "authentication-flow", label: "Flux" },
   { id: "authentication-middleware", label: "Middleware" },
-  { id: "deployment", label: "Déploiement" },
-  { id: "deployment-vercel", label: "Vercel" },
   { id: "deployment-env", label: "Variables d'environnement" },
 ]
 
@@ -995,12 +974,7 @@ const sections = [
     content:
       "StageDirect utilise un système d'authentification basé sur les cookies pour gérer les sessions utilisateur. L'authentification est gérée par les API Routes et le middleware Next.js.",
   },
-  {
-    id: "deployment",
-    title: "Déploiement",
-    content:
-      "StageDirect peut être déployé sur diverses plateformes, mais Vercel est recommandé pour sa simplicité et son intégration native avec Next.js.",
-  },
+  
 ]
 
 // Code examples
