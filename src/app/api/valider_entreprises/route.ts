@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../lib/prisma";
+import { prisma } from "../../../lib/prisma";
 
 // Gestion de la requête GET (récupérer les entreprises non validées)
 export const GET = async (req: NextRequest) => {
