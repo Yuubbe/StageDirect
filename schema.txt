@@ -17,17 +17,18 @@ model Utilisateur {
   stages   Stage[]
 }
 
-
 model Etudiant {
-  id           Int     @id @default(autoincrement())
-  nom          String
-  prenom       String
-  email        String  @unique
+  id       Int      @id @default(autoincrement())
+  nom      String
+  prenom   String
+  email    String @unique
   password     String
   etablissement String
   niveau       String
   createdAt    DateTime @default(now())
+  kanban   Kanban?
 }
+
 
 model Stage {
   id            Int      @id @default(autoincrement())
@@ -52,3 +53,11 @@ model Entreprise {
   nom      String
   stages   Stage[]
 }
+
+model Kanban {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique
+  columns  Json
+  etudiant Etudiant @relation(fields: [userId], references: [id])
+}
+

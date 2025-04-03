@@ -1,19 +1,33 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+// app/middleware.ts
 
-export function middleware(request: NextRequest) {
-    const token = request.cookies.get("token")?.value;
-    console.log("Token détecté dans le middleware :", token); // Ajoute ça
-  
-    if (!token) {
-      const loginUrl = new URL("/auth/login", request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-  
-    return NextResponse.next();
+import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+
+export function middleware(req: NextRequest) {
+  // Chercher le token dans les cookies
+  const token = req.cookies.get("token");
+
+  // Si le token est absent, rediriger vers /unauthorized
+  if (!token) {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
-  
-// Configurer le middleware pour qu'il s'applique uniquement à certaines routes
+
+  try {
+    const decodedToken = JSON.parse(atob(token.split(".")[1])); // Décoder le token JWT
+    // Vérifier si le rôle de l'utilisateur est SUPERADMIN
+    if (decodedToken.role !== "SUPERADMIN") {
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
+    }
+    
+    // Si le rôle est SUPERADMIN, continuer avec la requête
+    return NextResponse.next();
+  } catch (err) {
+    console.error("Erreur de décodage du token :", err);
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  }
+}
+
+// Appliquer ce middleware uniquement sur les pages d'administration
 export const config = {
-  matcher: ["/profile", "/dashboard/:path*"],
+  matcher: ["/admin/*"], // ou ici le chemin que tu utilises pour la page admin
 };

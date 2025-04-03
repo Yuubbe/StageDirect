@@ -8,56 +8,83 @@ datasource db {
 }
 
 model Utilisateur {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  nom      String
-  prenom   String
-  avatar   String?
-  password String
-  stages   Stage[]
-}
-
-model Etudiant {
-  id       Int      @id @default(autoincrement())
-  nom      String
-  prenom   String
-  email    String @unique
-  password     String
+  id            Int      @id @default(autoincrement())
+  nom           String
+  prenom        String
+  email         String   @unique
+  password      String
   etablissement String
-  niveau       String
-  createdAt    DateTime @default(now())
-  kanban   Kanban?
+  createdAt     DateTime @default(now())
+  role          Role     @default(USER)
+
+  // Relation avec Stage (un utilisateur peut être associé à un stage)
+  stage         Stage?   @relation(fields: [stageId], references: [id])
+  stageId       Int?     @unique // On fait en sorte que chaque utilisateur ait un seul stage
 }
 
+
+
+enum Role {
+  USER
+  PROFESSEUR
+  ADMIN
+  SUPERADMIN
+}
 
 model Stage {
-  id            Int      @id @default(autoincrement())
-  titre         String
-  description   String
-  dateDebut     DateTime
-  dateFin       DateTime
-  duree         Int
-  remuneration  Float
-  competences   String
-  entreprise    Entreprise @relation(fields: [entrepriseId], references: [id])
-  entrepriseId  Int
-  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
-  utilisateurId Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                Int                  @id @default(autoincrement())
+  intitulé          String
+  date              DateTime
+  entrepriseId      Int?
+  contactId         Int
+  createdAt         DateTime             @default(now())
+
+  // Relations avec les autres entités
+  entreprise        Entreprise?          @relation(fields: [entrepriseId], references: [id_entreprise])
+  contact           Contact              @relation(fields: [contactId], references: [id_contact])
+
+  // Relation inverse avec Utilisateur (Pas besoin de fields et references ici)
+  utilisateur       Utilisateur?         @relation
 }
 
 
 model Entreprise {
-  id       Int      @id @default(autoincrement())
-  nom      String
-  stages   Stage[]
+  id_entreprise    Int      @id @default(autoincrement())
+  nom_entreprise   String   @db.VarChar(50)
+  rue_entreprise   String?  @db.VarChar(60)
+  cp_entreprise    String?  @db.VarChar(10)
+  ville_entreprise String   @db.VarChar(30)
+  pays_entreprise  String   @default("France") @db.VarChar(30)
+  service_entreprise String? @db.VarChar(30)
+  tel_entreprise   String?  @db.VarChar(20)
+  fax_entreprise   String?  @db.VarChar(20)
+  email_entreprise String?  @db.VarChar(50)
+  taille_entreprise String? @db.VarChar(7)
+  fk_id_activite   Int
+  fk_id_contact    Int?     @unique
+  valider          Boolean  @default(false)
+  stages           Stage[]
+
+  // Relations
+  secteur_activite  SecteurActivite @relation(fields: [fk_id_activite], references: [id_activite])
+  contact           Contact?        @relation(fields: [fk_id_contact], references: [id_contact])
+
+  @@map("entreprise") // Correspondance avec la table SQL
 }
 
-model Kanban {
-  id       Int      @id @default(autoincrement())
-  userId   Int      @unique
-  columns  Json
-  etudiant Etudiant @relation(fields: [userId], references: [id])
+model SecteurActivite {
+  id_activite      Int                @id @default(autoincrement()) @map("id_activite")
+  libelle_activite String             @db.VarChar(50)
+
+  // Relations
+  entreprises      Entreprise[]
 }
 
+model Contact {
+  id_contact    Int                  @id @default(autoincrement())
+  nom_contact   String
+  tel_contact   String?
+  email_contact String?
+  entreprises   Entreprise[]
+  stages        Stage[]
+}

@@ -1,108 +1,158 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Eye, EyeOff, GraduationCap } from "lucide-react";
+import React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import Cookie from "js-cookie" // Import de js-cookie pour gérer les cookies
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-export default function ConnexionPage() {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [message, setMessage] = useState("");
-
-  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [message, setMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("");
-  
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-    });
-  
-    const data = await res.json();
-  
-    if (res.ok) {
-      setMessage("✅ Connexion réussie !");
-      localStorage.setItem("token", data.token); // Stocker le token
-      window.location.href = "/"; // Rediriger vers l'accueil
-    } else {
-      setMessage(`❌ ${data.error}`);
+    e.preventDefault()
+    setIsLoading(true)
+    setMessage("")
+    setIsSuccess(false)
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setIsSuccess(true)
+        setMessage("Connexion réussie !")
+        setUserEmail(data.email)
+
+        // Stocker l'email et le rôle de l'utilisateur dans les cookies
+        Cookie.set("userEmail", data.email, { expires: 7 })
+        Cookie.set("userRole", data.role, { expires: 7 }) // Stockage du rôle
+        localStorage.setItem("userRole", data.role) // Stockage du rôle aussi dans localStorage
+
+        setTimeout(() => {
+          router.push("/")
+        }, 2000)
+      } else {
+        setIsSuccess(false)
+        setMessage(data.message || "Identifiants incorrects.")
+        setUserEmail(null)
+        Cookie.remove("userRole") // Suppression du rôle en cas d'échec
+        localStorage.removeItem("userRole")
+      }
+    } catch (error) {
+      console.error(error)
+      setIsSuccess(false)
+      setMessage("Une erreur est survenue lors de la connexion.")
+      setUserEmail(null)
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
+
+  // Vérifier la présence du cookie au chargement de la page
+  React.useEffect(() => {
+    const storedEmail = Cookie.get("userEmail")
+    if (storedEmail) {
+      setUserEmail(storedEmail)
+    }
+  }, [])
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <div className="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-        <div className="w-full max-w-sm mx-auto lg:w-96">
-          <div className="text-center">
-            <Link href="/" className="inline-block mb-6">
-              <GraduationCap className="h-12 w-12 text-primary mx-auto" />
-            </Link>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Connectez-vous à votre compte</h2>
-          </div>
-
-          <div className="mt-8">
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div>
-                <Label htmlFor="email">Adresse e-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Connexion</CardTitle>
+          <CardDescription className="text-center">Entrez vos identifiants pour accéder à votre compte</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="exemple@domaine.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mot de passe</Label>
-                <div className="mt-1 relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    required
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    aria-label="Afficher ou masquer le mot de passe"
-                    className="absolute inset-y-0 right-0 flex items-center pr-3"
-                    onClick={togglePasswordVisibility}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
-                  </button>
-                </div>
+                <a href="#" className="text-sm text-primary hover:underline">
+                  Mot de passe oublié?
+                </a>
               </div>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                className="w-full"
+              />
+            </div>
 
-              <Button type="submit" className="w-full">Se connecter</Button>
-              {message && <p className="text-center mt-2 text-red-500">{message}</p>}
-            </form>
-          </div>
-        </div>
-      </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Chargement...
+                </>
+              ) : (
+                "Se connecter"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+
+        {message && (
+          <CardFooter>
+            <Alert variant={isSuccess ? "default" : "destructive"} className="w-full">
+              <AlertDescription>{message}</AlertDescription>
+            </Alert>
+          </CardFooter>
+        )}
+
+        {userEmail && (
+          <CardFooter className="flex justify-center border-t pt-4">
+            <p className="text-sm text-muted-foreground">
+              Vous êtes connecté en tant que: <span className="font-medium text-foreground">{userEmail}</span>
+            </p>
+          </CardFooter>
+        )}
+
+        <CardFooter className="flex justify-center border-t pt-4">
+          <p className="text-sm text-muted-foreground">
+            Vous n&apos;avez pas de compte?{" "}
+            <a href="/inscription" className="text-primary hover:underline">
+              Créer un compte
+            </a>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
-  );
+  )
 }
