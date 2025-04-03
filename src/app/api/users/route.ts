@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         role,
         password: hashedPassword,
         etablissement,
-        niveau,
+        niveau
       },
     });
 

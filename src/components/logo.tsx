@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion"
 
+
+
 interface LogoProps {
   className?: string
 }
@@ -44,5 +46,6 @@ export default function Logo({ className = "" }: LogoProps) {
       </svg>
     </motion.div>
   )
+  
 }
 

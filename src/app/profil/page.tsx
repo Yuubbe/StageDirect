@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Logo from "@/components/logo"
+import { NextResponse } from 'next/server'
 
 interface UserProfile {
   email: string
@@ -32,6 +33,9 @@ export default function Profil() {
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     const userEmail = Cookie.get("userEmail")
@@ -39,6 +43,7 @@ export default function Profil() {
       fetch(`/api/users/profile`)
         .then((res) => {
           if (!res.ok) {
+            console.error("Error fetching user profile:", res.status, res.statusText);
             throw new Error('Network response was not ok');
           }
           return res.json();
@@ -84,7 +89,8 @@ export default function Profil() {
         setUser(updatedUser)
         setIsEditing(false)
       } else {
-        console.error("Erreur lors de la mise à jour du profil")
+        const errorData = await response.json()
+        console.error("Erreur lors de la mise à jour du profil:", errorData.message)
       }
     } catch (error) {
       console.error("Erreur lors de la mise à jour du profil:", error)
@@ -97,6 +103,40 @@ export default function Profil() {
     setFormData(user)
     setIsEditing(false)
   }
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Les mots de passe ne correspondent pas.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: newPassword }), // Send new password
+      });
+
+      if (response.ok) {
+        console.log("Mot de passe mis à jour avec succès.");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        const errorData = await response.json();
+        console.error("Erreur lors de la mise à jour du mot de passe:", errorData.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du mot de passe:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -297,28 +337,6 @@ export default function Profil() {
                           />
                         </div>
                       </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="role">Rôle</Label>
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <Select
-                            disabled={!isEditing}
-                            value={formData?.role}
-                            onValueChange={(value) => handleSelectChange(value, "role")}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Sélectionnez un rôle" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="USER">Utilisateur</SelectItem>
-                              <SelectItem value="PROFESSEUR">Professeur</SelectItem>
-                              <SelectItem value="ADMIN">Administrateur</SelectItem>
-                              <SelectItem value="SUPERADMIN">Super Administrateur</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
                     </form>
                   </CardContent>
                 </Card>
@@ -333,33 +351,34 @@ export default function Profil() {
                     <CardDescription>Gérez les paramètres de sécurité de votre compte</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Shield className="h-5 w-5 text-muted-foreground" />
-                          <div>
-                            <h3 className="font-medium">Mot de passe</h3>
-                            <p className="text-sm text-muted-foreground">Dernière modification il y a 3 mois</p>
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          Modifier
-                        </Button>
+                    <form onSubmit={handlePasswordChange} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                        <Input
+                          id="newPassword"
+                          name="newPassword"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          required
+                        />
                       </div>
-                      <Separator />
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-5 w-5 text-muted-foreground" />
-                          <div>
-                            <h3 className="font-medium">Email de récupération</h3>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          Modifier
-                        </Button>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                        <Input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                        />
+                        {passwordError && <p className="text-red-500">{passwordError}</p>}
                       </div>
-                    </div>
+                      <Button type="submit" disabled={isLoading}>
+                        {isLoading ? "Mise à jour..." : "Changer le mot de passe"}
+                      </Button>
+                    </form>
                   </CardContent>
                 </Card>
               </motion.div>

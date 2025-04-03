@@ -152,19 +152,10 @@ export default function PresentationPage() {
                     </p>
                   </div>
                 </li>
-                <li className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">
-                    4
-                  </div>
-                  <div>
-                    <p>
-                      Comment ça marche ?
-                    </p>
-                  </div>
-                </li>
+                
                 <li className="flex items-start gap-4">
                   <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-orange-600 dark:text-purple-400 font-bold">
-                    5
+                    4
                   </div>
                   <div>
                     <p>
@@ -174,7 +165,7 @@ export default function PresentationPage() {
                 </li>
                 <li className="flex items-start gap-4">
                   <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-pink-600 dark:text-purple-400 font-bold">
-                    6
+                    5
                   </div>
                   <div>
                     <p>
@@ -184,7 +175,7 @@ export default function PresentationPage() {
                 </li>
                 <li className="flex items-start gap-4">
                   <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-green-600 dark:text-purple-400 font-bold">
-                    7
+                    6
                   </div>
                   <div>
                     <p>
@@ -407,74 +398,7 @@ export default function PresentationPage() {
       ),
     },
 
-    // Diapositive 6: Processus
-    {
-      id: "process",
-      content: (
-        <div className="flex flex-col h-full">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">Comment ça marche ?</h2>
-          </motion.div>
-
-          <div className="flex-1 flex items-center justify-center">
-            <div className="w-full max-w-4xl">
-              <div className="relative">
-                <div className="absolute left-8 top-0 bottom-0 w-1 bg-muted" />
-
-                {[
-                  {
-                    title: "Inscription et configuration",
-                    description: "Les établissements, entreprises et étudiants créent leurs profils",
-                    delay: 0.3,
-                  },
-                  {
-                    title: "Liste des entreprises.",
-                    description: "Une liste des entreprises est fournis pour faciliter la recherche de stage",
-                    delay: 0.6,
-                  },
-                  {
-                    title: "Recherche et candidature",
-                    description: "Les étudiants contactent les entreprises",
-                    delay: 0.9,
-                  },
-                  {
-                    title: "Sélection et validation",
-                    description: "Une fois le stage accepté, l'étudiant n'a plus qu'à remplir le formulaire de ce stage et qu'un professeur le valide",
-                    delay: 1.2,
-                  },
-                  {
-                    title: "Suivi du stage",
-                    description: "les professeurs suivent l'avancement du stage via le tableau Kanban que l'étudiant remplit au fur et à mesure. ",
-                    delay: 1.5,
-                  },
-                  {
-                    title: "Évaluation finale",
-                    description: "Évaluation et validation du stage",
-                    delay: 1.8,
-                  },
-                ].map((step, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: step.delay, duration: 0.5 }}
-                    className="relative pl-16 pb-8"
-                  >
-                    <div className="absolute left-[29px] top-0 w-6 h-6 rounded-full bg-primary transform -translate-x-1/2 flex items-center justify-center text-primary-foreground text-xs font-bold">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
+    
 
    
     // Diapositive pour le Cahier des Charges
@@ -711,7 +635,7 @@ export default function PresentationPage() {
                             <p className="text-muted-foreground">
                               Un contact peut être associé à une entreprise
                             </p>
-                            <p className="font-medium mt-1">Relation : 0..1 à 0..1</p>
+                            
                           </div>
                         </div>
 
