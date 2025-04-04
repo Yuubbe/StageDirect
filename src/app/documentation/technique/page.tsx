@@ -869,7 +869,7 @@ NODE_ENV="production"
                         <p className="mt-2">Pour déployer la base de données en production :</p>
 
                         <ol className="list-decimal pl-6 space-y-2 mt-4">
-                          <li>Créez une base de données MySQL sur votre hébergeur préféré</li>
+                          <li>Créez une base de données MySQL sur votre hébergeur</li>
                           <li>
                             Configurez la variable d'environnement <code>DATABASE_URL</code> avec les informations de
                             connexion
