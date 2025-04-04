@@ -2,12 +2,19 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, ChevronRight, Sun, Moon } from "lucide-react"
+import { Menu, ChevronRight, Sun, Moon, User, LogOut } from "lucide-react"
 import { useEffect, useState } from "react"
 import Cookie from "js-cookie"
 import { motion } from "framer-motion"
 import Logo from "@/components/logo"
 import { useTheme } from "next-themes"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface User {
   email: string
@@ -100,18 +107,32 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             {user ? (
-              <motion.div
-                className="flex items-center gap-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <span className="text-sm font-medium">{user.email}</span>
-                <Button variant="outline" size="sm" onClick={handleLogout} className="relative overflow-hidden group">
-                  <span className="relative z-10">Déconnexion</span>
-                  <span className="absolute inset-0 bg-red-100 dark:bg-red-900/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-                </Button>
-              </motion.div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="relative rounded-full">
+                    <User className="h-5 w-5" />
+                    <span className="sr-only">Menu utilisateur</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.email}</p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profil" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profil</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400 cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Se déconnecter</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
@@ -243,15 +264,11 @@ export default function Home() {
                 Notre plateforme offre des avantages uniques pour tous les acteurs
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {[
                 {
                   title: "Pour les étudiants",
                   description: "Trouvez facilement des stages correspondant à vos compétences et aspirations.",
-                },
-                {
-                  title: "Pour les entreprises",
-                  description: "Recrutez les meilleurs talents et gérez efficacement vos offres de stage.",
                 },
                 {
                   title: "Pour les écoles",
@@ -264,7 +281,7 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.2 }}
                   viewport={{ once: true }}
-                  className="bg-background rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+                  className="bg-background rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300 text-center"
                 >
                   <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                   <p className="text-muted-foreground">{item.description}</p>
@@ -430,4 +447,3 @@ function ThemeToggle() {
     </motion.div>
   )
 }
-
