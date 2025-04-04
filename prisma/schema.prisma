@@ -38,13 +38,10 @@ model Stage {
   entrepriseId      Int?
   contactId         Int
   createdAt         DateTime             @default(now())
-
-  // Relations avec les autres entités
   entreprise        Entreprise?          @relation(fields: [entrepriseId], references: [id_entreprise])
   contact           Contact              @relation(fields: [contactId], references: [id_contact])
-
-  // Relation inverse avec Utilisateur (Pas besoin de fields et references ici)
   utilisateur       Utilisateur?         @relation
+  valider          Boolean  @default(false)
 }
 
 

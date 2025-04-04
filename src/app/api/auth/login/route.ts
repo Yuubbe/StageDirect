@@ -1,42 +1,49 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json()
+    const { email, password } = await request.json();
 
     if (!email || !password) {
-      return new Response(JSON.stringify({ message: 'Email et mot de passe requis' }), { status: 400 })
+      return NextResponse.json(
+        { message: "Email et mot de passe requis" },
+        { status: 400 }
+      );
     }
 
     // Vérifier si l'utilisateur existe
     const utilisateur = await prisma.utilisateur.findUnique({
       where: { email },
-    })
+    });
 
     if (!utilisateur) {
-      return new Response(JSON.stringify({ message: 'Utilisateur non trouvé' }), { status: 404 })
+      return NextResponse.json(
+        { message: "Utilisateur non trouvé" },
+        { status: 404 }
+      );
     }
 
-    // Comparer les mots de passe en texte clair (pour les tests uniquement)
-    if (utilisateur.password !== password) {
-      return new Response(JSON.stringify({ message: 'Mot de passe incorrect' }), { status: 400 })
+    // Vérifier le mot de passe avec bcrypt
+    const isPasswordValid = await bcrypt.compare(password, utilisateur.password);
+
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { message: "Mot de passe incorrect" },
+        { status: 400 }
+      );
     }
 
-    return new Response(JSON.stringify({
-      id: utilisateur.id,
-      nom: utilisateur.nom,
-      prenom: utilisateur.prenom,
-      email: utilisateur.email,
-      etablissement: utilisateur.etablissement,
-      niveau: utilisateur.niveau,
-      role: utilisateur.role,
-      avatar: utilisateur.avatar,
-    }), { status: 200 })
+    // Ne pas renvoyer le mot de passe dans la réponse
+    const { password: _, ...userWithoutPassword } = utilisateur;
 
+    return NextResponse.json(userWithoutPassword, { status: 200 });
   } catch (error) {
-    console.error(error)
-    return new Response(JSON.stringify({ message: 'Erreur interne' }), { status: 500 })
+    console.error("Erreur lors de la connexion:", error);
+    return NextResponse.json(
+      { message: "Erreur interne" },
+      { status: 500 }
+    );
   }
 }
