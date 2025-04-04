@@ -51,7 +51,7 @@ export default function Home() {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
-  const navItems = ["Entreprises", "Admin", "Stages", "Kanban", "Contact", "Validation Entreprises"]
+  const navItems = ["Entreprises", "Admin", "Stages", "Kanban", "Contact", "Validation Entreprises", "Validation_stage"]
 
   const containerVariants = {
     hidden: { opacity: 0 },
