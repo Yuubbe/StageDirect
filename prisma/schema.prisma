@@ -14,7 +14,7 @@ model Utilisateur {
   email         String   @unique
   password      String
   etablissement String
-  niveau        String
+  niveau        String?
   role          Role     @default(USER)
   isVerified    Boolean  @default(false)
   verificationToken String?

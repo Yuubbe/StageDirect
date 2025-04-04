@@ -16,17 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-// Define the roles
-const roles = {
-  ADMIN: "ADMIN",
-  USER: "USER",
-  PROFESSEUR: "PROFESSEUR",
-  // Add other roles as needed
-}
-
 interface User {
   email: string
-  role: string
 }
 
 export default function Home() {
@@ -35,11 +26,10 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
-    // Récupérer l'email et le rôle de l'utilisateur depuis le cookie
+    // Récupérer l'email de l'utilisateur depuis le cookie
     const userEmail = Cookie.get("userEmail")
-    const userRole = Cookie.get("userRole") // Assuming you store the role in a cookie
     if (userEmail) {
-      setUser({ email: userEmail, role: userRole || roles.USER })
+      setUser({ email: userEmail })
     }
 
     const handleScroll = () => {
@@ -52,7 +42,6 @@ export default function Home() {
 
   const handleLogout = () => {
     Cookie.remove("userEmail")
-    Cookie.remove("userRole") // Remove role on logout
     setUser(null)
     window.location.reload()
   }
@@ -61,16 +50,7 @@ export default function Home() {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
-  // Define the navigation items based on user roles
-  const navItems = [
-    { name: "Entreprises", roles: [roles.ADMIN, roles.USER] },
-    { name: "Admin", roles: [roles.ADMIN] },
-    { name: "Stages", roles: [roles.ADMIN, roles.USER] },
-    { name: "Kanban", roles: [roles.USER] },
-    { name: "Contact", roles: [roles.ADMIN, roles.USER] },
-    { name: "Validation Entreprises", roles: [roles.PROFESSEUR] },
-    { name: "Validation_stage", roles: [roles.PROFESSEUR] },
-  ]
+  const navItems = ["Entreprises", "Admin", "Stages", "Kanban", "Contact", "Validation Entreprises"]
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -106,24 +86,22 @@ export default function Home() {
           <Logo />
 
           <nav className="hidden md:flex gap-6">
-            {navItems
-              .filter(item => user && item.roles.includes(user.role)) // Filter based on user role
-              .map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+            {navItems.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link
+                  href={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="text-sm font-medium relative group"
                 >
-                  <Link
-                    href={`/${item.name.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="text-sm font-medium relative group"
-                  >
-                    {item.name}
-                    <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-                  </Link>
-                </motion.div>
-              ))}
+                  {item}
+                  <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              </motion.div>
+            ))}
           </nav>
 
           <div className="flex items-center gap-4">
@@ -197,25 +175,23 @@ export default function Home() {
             transition={{ duration: 0.3 }}
           >
             <div className="container py-4 space-y-2 border-t">
-              {navItems
-                .filter(item => user && item.roles.includes(user.role)) // Filter based on user role
-                .map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+              {navItems.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link
+                    href={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="flex items-center py-2 text-sm font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Link
-                      href={`/${item.name.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="flex items-center py-2 text-sm font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <ChevronRight className="mr-2 h-4 w-4 text-primary" />
-                      {item.name}
-                    </Link>
-                  </motion.div>
-                ))}
+                    <ChevronRight className="mr-2 h-4 w-4 text-primary" />
+                    {item}
+                  </Link>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
         )}
