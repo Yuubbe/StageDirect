@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, ChevronRight, Sun, Moon, User, LogOut } from "lucide-react"
-import { Menu, ChevronRight, Sun, Moon, User, LogOut } from "lucide-react"
 import { useEffect, useState } from "react"
 import Cookie from "js-cookie"
 import { motion } from "framer-motion"
@@ -16,13 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 
 interface User {
   email: string
@@ -115,32 +108,6 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="relative rounded-full">
-                    <User className="h-5 w-5" />
-                    <span className="sr-only">Menu utilisateur</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.email}</p>
-                    </div>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/profil" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profil</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400 cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Se déconnecter</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon" className="relative rounded-full">
@@ -299,7 +266,6 @@ export default function Home() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {[
                 {
                   title: "Pour les étudiants",
@@ -316,7 +282,6 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.2 }}
                   viewport={{ once: true }}
-                  className="bg-background rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300 text-center"
                   className="bg-background rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300 text-center"
                 >
                   <h3 className="text-xl font-bold mb-2">{item.title}</h3>
